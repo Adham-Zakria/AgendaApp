@@ -1,0 +1,108 @@
+﻿@model IEnumerable<DataAccessLayer.Models.DailyBalance>
+@{
+    ViewData["Title"] = "تقفيلات الفروع";
+}
+
+<div class="container mt-4" dir="rtl">
+    <h3 class="mb-4 text-center">تقفيلات الفروع</h3>
+
+    <div class="mb-3 text-end">
+        <a href="/ManagerDashboard/Index" class="btn btn-secondary">← العودة للوحة المدير</a>
+    </div>
+    <form asp-action="BranchClosingsFiltered" method="get" class="row mb-4">
+        <div class="col-md-4">
+            <label>الفرع</label>
+            <select name="branchId" class="form-select">
+                <option value="">الكل</option>
+                @foreach (var branch in ViewBag.Branches)
+                {
+                    <option value="@branch.BranchId">@branch.BranchName</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>من تاريخ</label>
+            <input type="date" name="fromDate" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>إلى تاريخ</label>
+            <input type="date" name="toDate" class="form-control" />
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-primary w-100">فلترة</button>
+        </div>
+    </form>
+
+    <table class="table table-bordered table-striped text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>الفرع</th>
+                <th>تاريخ التقفيل</th>
+                <th>الإيرادات</th>
+                <th>المصروفات</th>
+                <th>الرصيد الافتتاحي</th>
+                <th>الرصيد الختامي</th>
+                <th>توقيت تقفيل اليوم</th>
+                <th>تعديل</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var b in Model)
+            {
+                @if (b.OpeningBalance > 0 && b.ClosingBalance > 0)
+                {
+                    // get income and expense from view bag
+                    var dailyData = ((IEnumerable<dynamic>)ViewBag.IncomeExpenses)
+                    .FirstOrDefault(x => x.BranchId == b.BranchId && x.Date == b.BalanceDate?.Date);
+
+                    <tr>
+                        <td>@b.Branch?.BranchName</td>
+                        <td>@b.BalanceDate?.ToString("yyyy-MM-dd")</td>
+                        <td class ="text-success fw-bold">@(dailyData?.Income ?? 0)</td>
+                        <td class="text-danger fw-bold">@(dailyData?.Expense ?? 0)</td>
+                        <td>@b.OpeningBalance?.ToString("N2")</td>
+                        <td>@b.ClosingBalance?.ToString("N2")</td>
+                        <td>@b.CreatedAt</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm edit-btn" data-id="@b.BalanceId">
+                                تعديل
+                            </button>
+                        </td>
+                   </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <!-- Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content" id="editModalContent"></div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script>
+            $(document).on("click", ".edit-btn", function () {
+                var id = $(this).data("id");
+                $.get("/ManagerDashboard/EditBalance/" + id, function (html) {
+                    $("#editModalContent").html(html);
+                    $("#editModal").modal("show");
+                });
+            });
+
+            $(document).on("click", "#saveBalanceBtn", function () {
+                var formData = $("#editBalanceForm").serialize();
+                $.post("/ManagerDashboard/EditBalance", formData, function (res) {
+                    if (res.success) {
+                        $("#editModal").modal("hide");
+                        location.reload();
+                    } else {
+                        alert("حدث خطأ أثناء الحفظ");
+                    }
+                });
+            });
+        </script>
+    }
+
+</div>

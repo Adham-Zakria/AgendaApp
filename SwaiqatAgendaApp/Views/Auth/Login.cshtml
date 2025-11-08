@@ -1,0 +1,71 @@
+﻿@* @{
+    ViewData["Title"] = "تسجيل الدخول";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="text-center mb-4">تسجيل الدخول</h4>
+
+                    <form method="post" asp-action="Login" asp-controller="Auth">
+                        <div class="form-group mb-3">
+                            <label>كود الموظف</label>
+                            <input type="text" name="UserCode" class="form-control" required />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label>كلمة المرور</label>
+                            <input type="password" name="UserPassword" class="form-control" required />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">دخول</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+ *@
+@{
+    ViewData["Title"] = "تسجيل الدخول";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="text-center mb-4">تسجيل الدخول</h4>
+
+                    @*message in case user code or password incorrect *@
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger text-center" role="alert">
+                            @ViewBag.ErrorMessage
+                        </div>
+                    }
+
+                    <form method="post" asp-action="Login" asp-controller="Auth">
+                        <div class="form-group mb-3">
+                            <label>كود الموظف</label>
+                            <input type="text" name="UserCode" class="form-control" required />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label>كلمة المرور</label>
+                            <input type="password" name="UserPassword" class="form-control" required />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">دخول</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

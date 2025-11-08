@@ -1,0 +1,66 @@
+﻿@*  @{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">مرحبا بعودتك</h1>
+     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p> 
+</div>  *@
+
+@{
+    ViewData["Title"] = "الصفحة الرئيسية";
+}
+
+<div class="container mt-5 text-center" dir="rtl">
+    <div class="card shadow-lg border-0 rounded-4 p-5 bg-light">
+        <div class="card-body">
+            <h1 class="display-5 mb-3 text-primary fw-bold">
+                👋 مرحباً بعودتك
+            </h1>
+
+            @* <p class="lead mb-4 text-secondary">
+                نتمنى لك يوماً سعيداً ومليئاً بالإنجازات داخل نظام <strong>Swaiqat Agenda</strong>
+            </p>
+
+            <hr class="my-4">
+
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <a href="@Url.Action("Index", "Transactions")" class="btn btn-success btn-lg rounded-3 px-4 shadow-sm">
+                    💼 إدارة المعاملات
+                </a>
+
+                <a href="@Url.Action("Index", "ManagerDashboard")" class="btn btn-info btn-lg rounded-3 px-4 shadow-sm">
+                    📊 لوحة المدير
+                </a>
+
+                <a href="@Url.Action("Logout", "Auth")" class="btn btn-outline-danger btn-lg rounded-3 px-4 shadow-sm">
+                    🚪 تسجيل الخروج
+                </a> *@
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background: linear-gradient(to bottom right, #e3f2fd, #ffffff);
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .card {
+        max-width: 700px;
+        margin: auto;
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+
+    .btn-lg {
+        font-size: 1.1rem;
+    }
+</style>
+
+

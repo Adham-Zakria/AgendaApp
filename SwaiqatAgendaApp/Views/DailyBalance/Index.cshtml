@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "قفل اليوم";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5" dir="rtl">
+    <div class="card shadow-sm">
+        <div class="card-body text-center">
+
+            <h3 class="mb-4">قفل اليوم - @ViewBag.BranchName</h3>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+            }
+
+            <table class="table table-bordered">
+                <tr><th>الإيرادات</th><td>@ViewBag.Income</td></tr>
+                <tr><th>المصروفات</th><td>@ViewBag.Expense</td></tr>
+                <tr class="table-info"><th>صافي اليوم</th><td>@ViewBag.Net</td></tr>
+                @if (ViewBag.Balance != null)
+                {
+                    <tr><th>رصيد افتتاحي</th><td>@ViewBag.Balance.OpeningBalance</td></tr>
+                    <tr><th>رصيد إغلاق</th><td>@ViewBag.Balance.ClosingBalance</td></tr>
+                }
+            </table>
+
+            <form method="post" asp-action="CloseDay" asp-controller="DailyBalance">
+                <button type="submit" class="btn btn-primary w-50 mt-3">قفل اليوم</button>
+            </form>
+            <div class="text-center mt-3">
+                <a asp-controller="Transactions" asp-action="Index" class="btn btn-success">
+                    ← العودة للوحة المعاملات
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

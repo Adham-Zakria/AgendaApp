@@ -1,0 +1,182 @@
+﻿@model IEnumerable<DataAccessLayer.Models.Transaction>
+
+@{
+    ViewData["Title"] = "لوحة المدير";
+}
+
+<div class="container mt-4" dir="rtl">
+    <h3 class="mb-4 text-center">لوحة مراجعة المعاملات</h3>
+
+    <form method="get" class="row mb-4">
+        <div class="col-md-3">
+            <label>من تاريخ</label>
+            <input type="date" name="fromDate" class="form-control" />
+        </div>
+
+        <div class="col-md-3">
+            <label>إلى تاريخ</label>
+            <input type="date" name="toDate" class="form-control" />
+        </div>
+
+        <div class="col-md-3">
+            <label>الفرع</label>
+            <select name="branchId" class="form-select">
+                <option value="">الكل</option>
+                @foreach (var branch in ViewBag.Branches)
+                {
+                    <option value="@branch.BranchId">@branch.BranchName</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label>الموظف</label>
+            <select name="userId" class="form-select">
+                <option value="">الكل</option>
+                @foreach (var user in ViewBag.Users)
+                {
+                    @if(user.GroupId == 2)
+                    {
+                       <option value="@user.UserId">@user.UserId - @user.UserName</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="col-md-12 mt-3 text-center">
+            <button type="submit" class="btn btn-primary">فلترة</button>
+            <a href="@Url.Action("ExportToExcel")" class="btn btn-success ms-2">تصدير إلى Excel</a>
+        </div>
+    </form>
+    <div class="d-flex justify-content-between align-items-center mb-4" dir="rtl">
+        <h3 class="mb-0">لوحة المدير</h3>
+        <a href="/Users/Add" class="btn btn-secondary">
+            <i class="bi bi-person-plus"></i> إضافة موظف جديد
+        </a>
+        <a href="/ManagerDashboard/BranchClosings" class="btn btn-secondary">
+            <i class="bi bi-calendar-check"></i> عرض تقفيلات الفروع
+        </a>
+    </div>
+
+
+    @* <table class="table table-bordered table-striped"> *@
+    <table class="table table-bordered table-striped text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>التاريخ</th>
+                <th>الفرع</th>
+                <th>الموظف</th>
+                <th>كود الموظف</th>
+                <th>النوع</th>
+                @* <th>الفئة</th>  *@
+                <th>البيان</th> 
+                <th>الوصف</th>
+                <th>المبلغ</th>
+                <th>تعديل</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var t in Model)
+            {
+                <tr>
+                    @* <td>@t.TransactionDate.ToString("yyyy-MM-dd")</td> *@
+                    <td>@t.TransactionDate</td>
+                    <td>@t.Branch?.BranchName</td>
+                    <td>@t.User?.UserName</td>
+                    <td>@t.User?.UserId</td>
+                    <td>@t.Type</td>
+                    <td>@t.Category</td>
+                    <td>@t.Description</td>
+                    <td>@t.Amount</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary edit-btn" data-id="@t.TransactionId">تعديل</button>
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Modal placeholder -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" id="editModalContent"></div>
+        </div>
+    </div>
+
+    @* <!-- Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">تعديل المعاملة</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body" id="editModalBody">
+                    <!-- هنا هيتم تحميل الفورم -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="button" class="btn btn-primary" id="saveChangesBtn">حفظ التعديل</button>
+                </div>
+            </div>
+        </div>
+    </div> *@
+
+
+    @section Scripts {
+        <script>
+            $(document).on("click", ".edit-btn", function () {
+                var id = $(this).data("id");
+                $.get("/ManagerDashboard/Edit/" + id, function (html) {
+                    $("#editModalContent").html(html);
+                    $("#editModal").modal("show");
+                });
+            });
+
+            $(document).on("click", "#saveEditBtn", function () {
+                var formData = $("#editTransactionForm").serialize();
+                $.post("/ManagerDashboard/Edit", formData, function (res) {
+                    if (res.success) {
+                        $("#editModal").modal("hide");
+                        location.reload();
+                    } else {
+                        alert("حدث خطأ أثناء الحفظ");
+                    }
+                });
+            });
+        </script>
+    }
+    @* @section Scripts {
+        <script>
+            $(document).ready(function () {
+
+                // لما المستخدم يضغط على زر تعديل
+                $('.edit-btn').on('click', function () {
+                    const id = $(this).data('id');
+
+                    $.get('/ManagerDashboard/Edit/' + id, function (data) {
+                        $('#editModalBody').html(data);
+                        $('#editModal').modal('show');
+                    }).fail(function () {
+                        alert("حصل خطأ أثناء تحميل البيانات!");
+                    });
+                });
+
+                // لما المستخدم يحفظ التعديل
+                $('#saveChangesBtn').on('click', function () {
+                    const form = $('#editTransactionForm');
+                    $.post('/ManagerDashboard/Edit', form.serialize(), function (result) {
+                        if (result.success) {
+                            location.reload();
+                        } else {
+                            alert("فشل التعديل!");
+                        }
+                    });
+                });
+            });
+        </script>
+    } *@
+
+</div>

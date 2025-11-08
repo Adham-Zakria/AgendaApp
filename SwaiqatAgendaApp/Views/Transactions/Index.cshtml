@@ -1,0 +1,97 @@
+﻿@model IEnumerable<DataAccessLayer.Models.Transaction>
+
+@{
+    ViewData["Title"] = "المعاملات اليومية";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4" dir="rtl">
+    <h3 class="mb-4 text-center">إدخال المعاملات اليومية</h3>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form asp-action="AddTransaction" asp-controller="Transactions" method="post">
+                <div class="row">
+                    @* <div class="col-md-3 mb-3">
+                        <label>الفرع</label>
+                        <select class="form-select" name="BranchId" required>
+                            <option value="">-- اختر الفرع --</option>
+                            @foreach (var branch in ViewBag.Branches)
+                            {
+                                <option value="@branch.BranchId">@branch.BranchName</option>
+                            }
+                        </select>
+                    </div> *@
+
+                    <div class="col-md-3 mb-3">
+                        <label>النوع</label>
+                        <select class="form-select" name="Type" required>
+                            <option value="إيراد">إيراد</option>
+                            <option value="مصروف">مصروف</option>
+                            @* <option value="مصروف">عرض</option> *@
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>البيان</label>
+                        <input type="text" name="Category" class="form-control" required />
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>الوصف</label>
+                        <input type="text" name="Description" class="form-control" />
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>المبلغ</label>
+                        <input type="number" step="0.01" name="Amount" class="form-control" required />
+                    </div>
+
+                    <div class="col-md-3 d-flex align-items-end mb-3">
+                        <button type="submit" class="btn btn-success w-100">إضافة</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mb-3">المعاملات المسجلة اليوم</h5>
+            
+            <table class="table table-bordered table-striped text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>الفرع</th>
+                        <th>النوع</th>
+                        <th>البيان</th>
+                        <th>الوصف</th>
+                        <th>المبلغ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Model)
+                    {
+                        <tr>
+                            @* <td>@t.TransactionDate.ToShortDateString()</td> *@
+                            <td>@t.TransactionDate</td>
+                            <td>@t.Branch?.BranchName</td>
+                            <td>@t.Type</td>
+                            <td>@t.Category</td>
+                            <td>@t.Description</td>
+                            <td>@t.Amount</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="text-center mt-3">
+                <a asp-controller="DailyBalance" asp-action="Index" class="btn btn-success">
+                    تقفيل اليوم
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>

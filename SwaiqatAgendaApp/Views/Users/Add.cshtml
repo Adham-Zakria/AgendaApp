@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "إضافة موظف جديد";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="text-center mb-4">إضافة موظف جديد</h4>
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger text-center">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <div>@error.ErrorMessage</div>
+                            }
+                        </div>
+                    }
+
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success text-center">@TempData["SuccessMessage"]</div>
+                    }
+
+                    <form asp-action="Add" asp-controller="Users" method="post">
+                        <div class="form-group mb-3">
+                            <label>اسم الموظف</label>
+                            <input type="text" name="UserName" class="form-control" required />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label>كود الموظف</label>
+                            <input type="number" name="UserId" class="form-control" required />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label>كلمة المرور</label>
+                            <input type="password" name="UserPassword" class="form-control" required />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label>الفرع</label>
+                            <select name="BranchId" class="form-control" required>
+                                <option value="">-- اختر الفرع --</option>
+                                @foreach (var branch in ViewBag.Branches)
+                                {
+                                    <option value="@branch.BranchId">@branch.BranchName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label>الوظيفة</label>
+                            <select name="GroupId" class="form-control" required>
+                                <option value="">-- اختر الوظيفة --</option>
+                                <option value="1">مدير</option>
+                                <option value="2">موظف</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">إضافة</button>
+                        <div class="text-center mt-3">
+                            <a asp-controller="ManagerDashboard" asp-action="Index" class="btn btn-success">
+                                ← العودة للوحة المدير
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

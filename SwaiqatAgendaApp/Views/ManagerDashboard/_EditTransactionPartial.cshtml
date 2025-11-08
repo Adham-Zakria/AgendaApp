@@ -1,0 +1,45 @@
+﻿@model DataAccessLayer.Models.Transaction
+
+<div class="modal-header">
+    <h5 class="modal-title">تعديل المعاملة</h5>
+    @* <button type="button" class="btn-close" data-bs-dismiss="modal"></button> *@
+</div>
+
+<div class="modal-body">
+    <form id="editTransactionForm">
+        <input type="hidden" name="TransactionId" value="@Model.TransactionId" />
+
+        @* <input type="hidden" asp-for="UserId" />
+        <input type="hidden" asp-for="BranchId" /> *@
+
+        <div class="mb-3">
+            <label>الوصف</label>
+            <input type="text" name="Description" value="@Model.Description" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+             @* <label>الفئة</label>  *@
+             <label>البيان</label> 
+            <input type="text" name="Category" value="@Model.Category" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label>النوع</label>
+            <select name="Type" class="form-select">
+                <option value="إيراد" selected="@((Model.Type == "إيراد") ? "selected" : null)">إيراد</option>
+                <option value="مصروف" selected="@((Model.Type == "مصروف") ? "selected" : null)">مصروف</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>المبلغ</label>
+            <input type="number" name="Amount" value="@Model.Amount" step="0.01" class="form-control" />
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button> 
+    <button type="button" class="btn btn-primary" id="saveEditBtn">حفظ</button>
+</div>
+
