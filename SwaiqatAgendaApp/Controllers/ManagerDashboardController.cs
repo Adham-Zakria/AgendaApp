@@ -164,6 +164,20 @@ namespace SwaiqatAgendaApp.Controllers
             if (toDate.HasValue)
                 balances = balances.Where(b => b.BalanceDate <= toDate);
 
+            //
+            var incomeExpenses = _transactionsService.GetAll()
+                .GroupBy(t => new { t.BranchId, Date = t.TransactionDate.Date })
+                .Select(g => new
+                {
+                    BranchId = g.Key.BranchId,
+                    Date = g.Key.Date,
+                    Income = g.Where(t => t.Type == "إيراد").Sum(t => t.Amount),
+                    Expense = g.Where(t => t.Type == "مصروف").Sum(t => t.Amount)
+                })
+                .ToList();
+
+            ViewBag.IncomeExpenses = incomeExpenses;
+
             ViewBag.Branches = _branchService.GetAllBranches();
             //return View(balances.OrderByDescending(b => b.BalanceDate).ToList());
             return View("BranchClosings", balances.OrderByDescending(b => b.BalanceDate).ToList());

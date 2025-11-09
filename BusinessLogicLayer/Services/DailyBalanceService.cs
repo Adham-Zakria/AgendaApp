@@ -2,6 +2,7 @@
 using DataAccessLayer.Contracts;
 using DataAccessLayer.Exceptions;
 using DataAccessLayer.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -109,13 +110,16 @@ namespace BusinessLogicLayer.Services
         public IEnumerable<DailyBalance> GetAllBalances()
         {
             return _balanceRepository.GetAll()
+                //.Include(b => b.Branch)
                 .OrderByDescending(b => b.BalanceDate)
                 .ToList();
         }
 
         public DailyBalance GetById(int id)
         {
-            return _balanceRepository.GetAll().FirstOrDefault(b => b.BalanceId == id)
+            return _balanceRepository.GetAll()
+                //.Include(b => b.Branch)
+                .FirstOrDefault(b => b.BalanceId == id)
                 ?? throw new NotFoundException("التقفيل غير موجود");
         }
 

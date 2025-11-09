@@ -47,13 +47,22 @@
             </tr>
         </thead>
         <tbody>
+            @{
+                var incomeExpenses = ViewBag.IncomeExpenses as IEnumerable<dynamic>;
+            }
+
             @foreach (var b in Model)
             {
-                @if (b.OpeningBalance > 0 && b.ClosingBalance > 0)
-                {
+                 @* @if (b.OpeningBalance > 0 && b.ClosingBalance > 0) // *@
+                 @* @if (b.ClosingBalance > 0)  *@
+                @* { // *@
                     // get income and expense from view bag
-                    var dailyData = ((IEnumerable<dynamic>)ViewBag.IncomeExpenses)
-                    .FirstOrDefault(x => x.BranchId == b.BranchId && x.Date == b.BalanceDate?.Date);
+                    @* var dailyData = ((IEnumerable<dynamic>)ViewBag.IncomeExpenses)
+                    .FirstOrDefault(x => x.BranchId == b.BranchId && x.Date == b.BalanceDate?.Date); *@
+
+                    var dailyData = incomeExpenses?
+                     .FirstOrDefault(x => x.BranchId == b.BranchId && x.Date == b.BalanceDate?.Date);
+                    @* .FirstOrDefault(x => x.BranchId == b.BranchId && x.Date.Date == b.BalanceDate!.Value.Date); *@
 
                     <tr>
                         <td>@b.Branch?.BranchName</td>
@@ -69,7 +78,7 @@
                             </button>
                         </td>
                    </tr>
-                }
+                @* } // *@
             }
         </tbody>
     </table>

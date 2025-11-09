@@ -48,7 +48,7 @@
             <a href="@Url.Action("ExportToExcel")" class="btn btn-success ms-2">تصدير إلى Excel</a>
         </div>
     </form>
-    <div class="d-flex justify-content-between align-items-center mb-4" dir="rtl">
+    @* <div class="d-flex justify-content-between align-items-center mb-4" dir="rtl">
         <h3 class="mb-0">لوحة المدير</h3>
         <a href="/Users/Add" class="btn btn-secondary">
             <i class="bi bi-person-plus"></i> إضافة موظف جديد
@@ -56,7 +56,20 @@
         <a href="/ManagerDashboard/BranchClosings" class="btn btn-secondary">
             <i class="bi bi-calendar-check"></i> عرض تقفيلات الفروع
         </a>
+    </div> *@
+    <div class="d-flex justify-content-between align-items-center mb-4" dir="rtl">
+        <h3 class="mb-0">لوحة المدير</h3>
+
+        <div class="d-flex gap-2">
+            <a href="/Users/Add" class="btn btn-secondary">
+                <i class="bi bi-person-plus"></i> إضافة موظف جديد
+            </a>
+            <a href="/ManagerDashboard/BranchClosings" class="btn btn-secondary">
+                <i class="bi bi-calendar-check"></i> عرض تقفيلات الفروع
+            </a>
+        </div>
     </div>
+
 
 
     @* <table class="table table-bordered table-striped"> *@

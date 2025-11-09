@@ -1,17 +1,21 @@
 ﻿@model DataAccessLayer.Models.DailyBalance
 
-<div class="modal-header bg-warning text-white">
+<div class="modal-header bg-secondary text-white">
     <h5 class="modal-title">تعديل تقفيل الفرع</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    @* <button type="button" class="btn-close" data-bs-dismiss="modal"></button> *@
 </div>
 
 <div class="modal-body">
     <form id="editBalanceForm">
         <input type="hidden" name="BalanceId" value="@Model.BalanceId" />
 
-        <div class="mb-3">
+        @* <div class="mb-3">
             <label>الفرع</label>
             <input class="form-control" value="@Model.Branch?.BranchName" readonly />
+        </div> *@
+        <div class="mb-3">
+            <label>تاريخ التقفيل</label>
+            <input class="form-control" value="@Model.BalanceDate?.ToString("yyyy-MM-dd")" readonly />
         </div>
 
         <div class="mb-3">
@@ -24,10 +28,7 @@
             <input name="ClosingBalance" class="form-control" type="number" step="0.01" value="@Model.ClosingBalance" />
         </div>
 
-        <div class="mb-3">
-            <label>تاريخ التقفيل</label>
-            <input class="form-control" value="@Model.BalanceDate?.ToString("yyyy-MM-dd")" readonly />
-        </div>
+        
     </form>
 </div>
 

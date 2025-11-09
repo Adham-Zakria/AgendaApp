@@ -2,6 +2,7 @@
 using BusinessLogicLayer.ServicesAbstraction;
 using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace SwaiqatAgendaApp.Controllers
 {
@@ -9,11 +10,15 @@ namespace SwaiqatAgendaApp.Controllers
     {
         private readonly ITransactionsService _transactionService;
         private readonly IBranchService _branchService;
+        private readonly IDailyBalanceService _dailyBalanceService;
 
-        public TransactionsController(ITransactionsService transactionService, IBranchService branchService)
+        public TransactionsController(ITransactionsService transactionService, 
+            IBranchService branchService,
+            IDailyBalanceService dailyBalanceService)
         {
             _transactionService = transactionService;
             _branchService = branchService;
+            _dailyBalanceService = dailyBalanceService;
         }
 
         //[HttpGet]
@@ -45,6 +50,12 @@ namespace SwaiqatAgendaApp.Controllers
                 .GetByDate(DateTime.Today)
                 .Where(t => t.BranchId == userBranchId.Value)
                 .ToList();
+            //
+            var today = DateTime.Today;
+            var dailyBalance = _dailyBalanceService.GetByDate((int)userBranchId, today);
+            decimal openingBalance = dailyBalance?.OpeningBalance ?? 0;
+
+            ViewBag.OpeningBalance = openingBalance;
 
             return View(transactions);
         }

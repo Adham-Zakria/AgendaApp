@@ -58,6 +58,12 @@
     <div class="card">
         <div class="card-body">
             <h5 class="mb-3">المعاملات المسجلة اليوم</h5>
+
+            <div class="alert alert-info text-center fs-5">
+                 <strong>الرصيد الافتتاحي للفرع اليوم:</strong>
+                @ViewBag.OpeningBalance.ToString("N2") جنية
+            </div>
+
             
             <table class="table table-bordered table-striped text-center">
                 <thead class="table-dark">
