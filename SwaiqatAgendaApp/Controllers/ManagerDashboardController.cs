@@ -2,10 +2,15 @@
 using BusinessLogicLayer.ServicesAbstraction;
 using ClosedXML.Excel;
 using DataAccessLayer.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SwaiqatAgendaApp.Helper;
 
 namespace SwaiqatAgendaApp.Controllers
 {
+    //[Authorize]
+    //[SessionAuthorize]
+    [SessionAuthorize(requireAdmin: true)]
     public class ManagerDashboardController : Controller
     {
         private readonly ITransactionsService _transactionsService;
@@ -49,10 +54,64 @@ namespace SwaiqatAgendaApp.Controllers
             return View(transactions.ToList());
         }
 
+        //[HttpGet]
+        //public IActionResult ExportToExcel()
+        //{
+        //    var transactions = _transactionsService.GetAll().ToList();
+
+        //    using (var workbook = new XLWorkbook())
+        //    {
+        //        var ws = workbook.Worksheets.Add("Transactions");
+        //        ws.Cell(1, 1).Value = "التاريخ";
+        //        ws.Cell(1, 2).Value = "الفرع";
+        //        ws.Cell(1, 3).Value = "الموظف";
+        //        ws.Cell(1, 4).Value = "النوع";
+        //        //ws.Cell(1, 5).Value = "الفئة";
+        //        ws.Cell(1, 5).Value = "البيان";
+        //        ws.Cell(1, 6).Value = "الوصف";
+        //        ws.Cell(1, 7).Value = "المبلغ";
+
+        //        int row = 2;
+        //        foreach (var t in transactions)
+        //        {
+        //            ws.Cell(row, 1).Value = t.TransactionDate;
+        //            ws.Cell(row, 2).Value = t.Branch?.BranchName;
+        //            ws.Cell(row, 3).Value = t.User?.UserName;
+        //            ws.Cell(row, 4).Value = t.Type;
+        //            ws.Cell(row, 5).Value = t.Category;
+        //            ws.Cell(row, 6).Value = t.Description;
+        //            ws.Cell(row, 7).Value = t.Amount;
+        //            row++;
+        //        }
+
+        //        using (var stream = new MemoryStream())
+        //        {
+        //            workbook.SaveAs(stream);
+        //            var content = stream.ToArray();
+        //            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Transactions.xlsx");
+        //        }
+        //    }
+        //}
+
         [HttpGet]
-        public IActionResult ExportToExcel()
+        public IActionResult ExportToExcel(DateTime? fromDate, DateTime? toDate, int? branchId, int? userId)
         {
-            var transactions = _transactionsService.GetAll().ToList();
+            var transactions = _transactionsService.GetAll();
+
+            // apply filters
+            if (fromDate.HasValue)
+                transactions = transactions.Where(t => t.TransactionDate.Date >= fromDate.Value.Date);
+
+            if (toDate.HasValue)
+                transactions = transactions.Where(t => t.TransactionDate.Date <= toDate.Value.Date);
+
+            if (branchId.HasValue && branchId.Value > 0)
+                transactions = transactions.Where(t => t.BranchId == branchId.Value);
+
+            if (userId.HasValue && userId.Value > 0)
+                transactions = transactions.Where(t => t.UserId == userId.Value);
+
+            var list = transactions.ToList();
 
             using (var workbook = new XLWorkbook())
             {
@@ -61,15 +120,14 @@ namespace SwaiqatAgendaApp.Controllers
                 ws.Cell(1, 2).Value = "الفرع";
                 ws.Cell(1, 3).Value = "الموظف";
                 ws.Cell(1, 4).Value = "النوع";
-                //ws.Cell(1, 5).Value = "الفئة";
                 ws.Cell(1, 5).Value = "البيان";
                 ws.Cell(1, 6).Value = "الوصف";
                 ws.Cell(1, 7).Value = "المبلغ";
 
                 int row = 2;
-                foreach (var t in transactions)
+                foreach (var t in list)
                 {
-                    ws.Cell(row, 1).Value = t.TransactionDate;
+                    ws.Cell(row, 1).Value = t.TransactionDate.ToString("yyyy-MM-dd HH:mm");
                     ws.Cell(row, 2).Value = t.Branch?.BranchName;
                     ws.Cell(row, 3).Value = t.User?.UserName;
                     ws.Cell(row, 4).Value = t.Type;
@@ -83,10 +141,13 @@ namespace SwaiqatAgendaApp.Controllers
                 {
                     workbook.SaveAs(stream);
                     var content = stream.ToArray();
-                    return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Transactions.xlsx");
+                    return File(content,
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        "Transactions.xlsx");
                 }
             }
         }
+
 
         [HttpGet]
         public IActionResult Edit(int id)

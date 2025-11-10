@@ -44,8 +44,20 @@
         </div>
 
         <div class="col-md-12 mt-3 text-center">
-            <button type="submit" class="btn btn-primary">فلترة</button>
-            <a href="@Url.Action("ExportToExcel")" class="btn btn-success ms-2">تصدير إلى Excel</a>
+            <button type="submit" class="btn btn-outline-primary">فلترة</button>
+            @* <a href="@Url.Action("ExportToExcel")" class="btn btn-success ms-2">تصدير إلى Excel</a> *@
+            @{
+                var fromDate = Context.Request.Query["fromDate"].ToString();
+                var toDate = Context.Request.Query["toDate"].ToString();
+                var branchId = Context.Request.Query["branchId"].ToString();
+                var userId = Context.Request.Query["userId"].ToString();
+            }
+
+            <a href="@Url.Action("ExportToExcel", new { fromDate = fromDate, toDate = toDate, branchId = branchId, userId = userId })"
+               class="btn btn-outline-success ms-2">
+                تصدير إلى Excel
+            </a>
+
         </div>
     </form>
     @* <div class="d-flex justify-content-between align-items-center mb-4" dir="rtl">
@@ -103,7 +115,7 @@
                     <td>@t.Description</td>
                     <td>@t.Amount</td>
                     <td>
-                        <button class="btn btn-sm btn-secondary edit-btn" data-id="@t.TransactionId">تعديل</button>
+                        <button class="btn btn-sm btn-outline-primary edit-btn" data-id="@t.TransactionId">تعديل</button>
                     </td>
 
                 </tr>

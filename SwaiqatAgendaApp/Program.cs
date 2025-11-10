@@ -27,7 +27,13 @@ builder.Services.AddScoped<IDailyBalanceService, DailyBalanceService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
 
 
-builder.Services.AddSession();
+//builder.Services.AddSession();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+});
+
 builder.Services.AddHttpContextAccessor();
 
 

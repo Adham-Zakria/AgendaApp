@@ -2,10 +2,13 @@
 using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SwaiqatAgendaApp.Helper;
 
 namespace SwaiqatAgendaApp.Controllers
 {
-    //[Authorize(Roles = "Manager")]
+    //[Authorize]
+    //[SessionAuthorize]
+    [SessionAuthorize(requireAdmin: true)]
     public class UsersController : Controller
     {
         private readonly IUsersService _usersService;
@@ -46,7 +49,7 @@ namespace SwaiqatAgendaApp.Controllers
                 // branches loading
                 ViewBag.Branches = _branchService.GetAllBranches();
 
-                if (!ModelState.IsValid)
+                if (!ModelState.IsValid) 
                     return View(model);
 
                 // checking for existing user code

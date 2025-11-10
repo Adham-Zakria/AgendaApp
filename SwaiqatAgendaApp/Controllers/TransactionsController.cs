@@ -52,10 +52,22 @@ namespace SwaiqatAgendaApp.Controllers
                 .ToList();
             //
             var today = DateTime.Today;
-            var dailyBalance = _dailyBalanceService.GetByDate((int)userBranchId, today);
-            decimal openingBalance = dailyBalance?.OpeningBalance ?? 0;
+            //var dailyBalance = _dailyBalanceService.GetByDate((int)userBranchId, today);
+            //decimal openingBalance = dailyBalance?.OpeningBalance ?? 0;
 
-            ViewBag.OpeningBalance = openingBalance;
+            //ViewBag.OpeningBalance = openingBalance;
+            var dailyBalance = _dailyBalanceService.GetByDate((int)userBranchId, today);
+            if (dailyBalance == null)
+            {
+                var yesterday = today.AddDays(-1);
+                var yesterdayBalance = _dailyBalanceService.GetByDate((int)userBranchId, yesterday);
+                ViewBag.OpeningBalance = yesterdayBalance?.ClosingBalance ?? 0;
+            }
+            else
+            {
+                ViewBag.OpeningBalance = dailyBalance.OpeningBalance;
+            }
+
 
             return View(transactions);
         }
