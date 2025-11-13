@@ -40,7 +40,8 @@ namespace SwaiqatAgendaApp.Controllers
                 transactions = transactions.Where(t => t.TransactionDate >= fromDate.Value);
 
             if (toDate.HasValue)
-                transactions = transactions.Where(t => t.TransactionDate <= toDate.Value);
+                //transactions = transactions.Where(t => t.TransactionDate <= toDate.Value);
+                transactions = transactions.Where(t => t.TransactionDate < toDate.Value.AddDays(1));
 
             if (branchId.HasValue && branchId > 0)
                 transactions = transactions.Where(t => t.BranchId == branchId);
@@ -93,6 +94,62 @@ namespace SwaiqatAgendaApp.Controllers
         //    }
         //}
 
+        //[HttpGet]
+        //public IActionResult ExportToExcel(DateTime? fromDate, DateTime? toDate, int? branchId, int? userId)
+        //{
+        //    var transactions = _transactionsService.GetAll();
+
+        //    // apply filters
+        //    if (fromDate.HasValue)
+        //        transactions = transactions.Where(t => t.TransactionDate.Date >= fromDate.Value.Date);
+
+        //    if (toDate.HasValue)
+        //        //transactions = transactions.Where(t => t.TransactionDate.Date <= toDate.Value.Date);
+        //        transactions = transactions.Where(t => t.TransactionDate < toDate.Value.AddDays(1));
+
+
+        //    if (branchId.HasValue && branchId.Value > 0)
+        //        transactions = transactions.Where(t => t.BranchId == branchId.Value);
+
+        //    if (userId.HasValue && userId.Value > 0)
+        //        transactions = transactions.Where(t => t.UserId == userId.Value);
+
+        //    var list = transactions.ToList();
+
+        //    using (var workbook = new XLWorkbook())
+        //    {
+        //        var ws = workbook.Worksheets.Add("Transactions");
+        //        ws.Cell(1, 1).Value = "التاريخ";
+        //        ws.Cell(1, 2).Value = "الفرع";
+        //        ws.Cell(1, 3).Value = "الموظف";
+        //        ws.Cell(1, 4).Value = "النوع";
+        //        ws.Cell(1, 5).Value = "البيان";
+        //        ws.Cell(1, 6).Value = "الوصف";
+        //        ws.Cell(1, 7).Value = "المبلغ";
+
+        //        int row = 2;
+        //        foreach (var t in list)
+        //        {
+        //            ws.Cell(row, 1).Value = t.TransactionDate.ToString("yyyy-MM-dd HH:mm");
+        //            ws.Cell(row, 2).Value = t.Branch?.BranchName;
+        //            ws.Cell(row, 3).Value = t.User?.UserName;
+        //            ws.Cell(row, 4).Value = t.Type;
+        //            ws.Cell(row, 5).Value = t.Category;
+        //            ws.Cell(row, 6).Value = t.Description;
+        //            ws.Cell(row, 7).Value = t.Amount;
+        //            row++;
+        //        }
+
+        //        using (var stream = new MemoryStream())
+        //        {
+        //            workbook.SaveAs(stream);
+        //            var content = stream.ToArray();
+        //            return File(content,
+        //                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        //                "Transactions.xlsx");
+        //        }
+        //    }
+        //}
         [HttpGet]
         public IActionResult ExportToExcel(DateTime? fromDate, DateTime? toDate, int? branchId, int? userId)
         {
@@ -103,7 +160,7 @@ namespace SwaiqatAgendaApp.Controllers
                 transactions = transactions.Where(t => t.TransactionDate.Date >= fromDate.Value.Date);
 
             if (toDate.HasValue)
-                transactions = transactions.Where(t => t.TransactionDate.Date <= toDate.Value.Date);
+                transactions = transactions.Where(t => t.TransactionDate < toDate.Value.AddDays(1));
 
             if (branchId.HasValue && branchId.Value > 0)
                 transactions = transactions.Where(t => t.BranchId == branchId.Value);
@@ -111,31 +168,39 @@ namespace SwaiqatAgendaApp.Controllers
             if (userId.HasValue && userId.Value > 0)
                 transactions = transactions.Where(t => t.UserId == userId.Value);
 
-            var list = transactions.ToList();
+            // استبعاد أنواع معينة من الجدول
+            var excludedTypes = new[] { "دفعة بنك", "دفعة جملة ماركت", "فيزا بنك", "جاري مالك" };
+            var list = transactions
+                .Where(t => !excludedTypes.Contains(t.Type))
+                .OrderBy(t => t.TransactionDate)
+                .ToList();
 
             using (var workbook = new XLWorkbook())
             {
-                var ws = workbook.Worksheets.Add("Transactions");
-                ws.Cell(1, 1).Value = "التاريخ";
-                ws.Cell(1, 2).Value = "الفرع";
-                ws.Cell(1, 3).Value = "الموظف";
-                ws.Cell(1, 4).Value = "النوع";
+                var ws = workbook.Worksheets.Add("اليومية");
+
+                // العناوين
+                ws.Cell(1, 1).Value = "الإيرادات";
+                ws.Cell(1, 2).Value = "المصروفات";
+                ws.Cell(1, 3).Value = "النوع";
+                ws.Cell(1, 4).Value = "الوصف";
                 ws.Cell(1, 5).Value = "البيان";
-                ws.Cell(1, 6).Value = "الوصف";
-                ws.Cell(1, 7).Value = "المبلغ";
 
                 int row = 2;
                 foreach (var t in list)
                 {
-                    ws.Cell(row, 1).Value = t.TransactionDate.ToString("yyyy-MM-dd HH:mm");
-                    ws.Cell(row, 2).Value = t.Branch?.BranchName;
-                    ws.Cell(row, 3).Value = t.User?.UserName;
-                    ws.Cell(row, 4).Value = t.Type;
-                    ws.Cell(row, 5).Value = t.Category;
-                    ws.Cell(row, 6).Value = t.Description;
-                    ws.Cell(row, 7).Value = t.Amount;
+                    ws.Cell(row, 1).Value = t.Type == "إيراد" ? t.Amount : "-";
+                    ws.Cell(row, 2).Value = t.Type == "مصروف" ? t.Amount : "-";
+                    ws.Cell(row, 3).Value = t.Type;
+                    ws.Cell(row, 4).Value = t.Description;
+                    ws.Cell(row, 5).Value = t.Category ?? "-";
                     row++;
                 }
+
+                // تنسيقات بسيطة
+                ws.Range("A1:E1").Style.Font.Bold = true;
+                ws.Range("A1:E1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                ws.Columns().AdjustToContents();
 
                 using (var stream = new MemoryStream())
                 {
@@ -143,10 +208,11 @@ namespace SwaiqatAgendaApp.Controllers
                     var content = stream.ToArray();
                     return File(content,
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        "Transactions.xlsx");
+                        "اليومية.xlsx");
                 }
             }
         }
+
 
 
         [HttpGet]
@@ -195,6 +261,18 @@ namespace SwaiqatAgendaApp.Controllers
             var transactions = _transactionsService.GetAll();
 
             // نحسب الإيراد والمصروف لكل فرع وتاريخ
+            //var incomeExpenses = transactions
+            //    .GroupBy(t => new { t.BranchId, Date = t.TransactionDate.Date })
+            //    .Select(g => new
+            //    {
+            //        g.Key.BranchId,
+            //        g.Key.Date,
+            //        Income = g.Where(x => x.Type == "إيراد").Sum(x => x.Amount),
+            //        Expense = g.Where(x => x.Type == "مصروف").Sum(x => x.Amount)
+            //    })
+            //    .ToList();
+
+            // نحسب الإيراد، المصروف، والدفعات الإضافية لكل فرع وتاريخ
             var incomeExpenses = transactions
                 .GroupBy(t => new { t.BranchId, Date = t.TransactionDate.Date })
                 .Select(g => new
@@ -202,7 +280,11 @@ namespace SwaiqatAgendaApp.Controllers
                     g.Key.BranchId,
                     g.Key.Date,
                     Income = g.Where(x => x.Type == "إيراد").Sum(x => x.Amount),
-                    Expense = g.Where(x => x.Type == "مصروف").Sum(x => x.Amount)
+                    Expense = g.Where(x => x.Type == "مصروف").Sum(x => x.Amount),
+                    BankPayment = g.Where(x => x.Type == "دفعة بنك").Sum(x => x.Amount),
+                    WholesalePayment = g.Where(x => x.Type == "دفعة جملة ماركت").Sum(x => x.Amount),
+                    VisaPayment = g.Where(x => x.Type == "فيزا بنك").Sum(x => x.Amount),
+                    OwnerPayment = g.Where(x => x.Type == "جاري مالك").Sum(x => x.Amount)
                 })
                 .ToList();
 
@@ -226,14 +308,28 @@ namespace SwaiqatAgendaApp.Controllers
                 balances = balances.Where(b => b.BalanceDate <= toDate);
 
             //
+            //var incomeExpenses = _transactionsService.GetAll()
+            //    .GroupBy(t => new { t.BranchId, Date = t.TransactionDate.Date })
+            //    .Select(g => new
+            //    {
+            //        BranchId = g.Key.BranchId,
+            //        Date = g.Key.Date,
+            //        Income = g.Where(t => t.Type == "إيراد").Sum(t => t.Amount),
+            //        Expense = g.Where(t => t.Type == "مصروف").Sum(t => t.Amount)
+            //    })
+            //    .ToList();
             var incomeExpenses = _transactionsService.GetAll()
                 .GroupBy(t => new { t.BranchId, Date = t.TransactionDate.Date })
                 .Select(g => new
                 {
-                    BranchId = g.Key.BranchId,
-                    Date = g.Key.Date,
-                    Income = g.Where(t => t.Type == "إيراد").Sum(t => t.Amount),
-                    Expense = g.Where(t => t.Type == "مصروف").Sum(t => t.Amount)
+                    g.Key.BranchId,
+                    g.Key.Date,
+                    Income = g.Where(x => x.Type == "إيراد").Sum(x => x.Amount),
+                    Expense = g.Where(x => x.Type == "مصروف").Sum(x => x.Amount),
+                    BankPayment = g.Where(x => x.Type == "دفعة بنك").Sum(x => x.Amount),
+                    WholesalePayment = g.Where(x => x.Type == "دفعة جملة ماركت").Sum(x => x.Amount),
+                    VisaPayment = g.Where(x => x.Type == "فيزا بنك").Sum(x => x.Amount),
+                    OwnerPayment = g.Where(x => x.Type == "جاري مالك").Sum(x => x.Amount)
                 })
                 .ToList();
 

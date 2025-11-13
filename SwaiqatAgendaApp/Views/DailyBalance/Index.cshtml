@@ -1,4 +1,4 @@
-﻿@{
+﻿@* @{
     ViewData["Title"] = "قفل اليوم";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -40,4 +40,73 @@
             </div>
         </div>
     </div>
+</div> *@
+
+@{
+    ViewData["Title"] = "قفل اليوم";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    decimal openingBalance = ViewBag.OpeningBalance ?? 0;
+    decimal totalIncome = ViewBag.TotalIncome ?? 0;
+    decimal totalExpense = ViewBag.TotalExpense ?? 0;
+    decimal bankPayment = ViewBag.BankPayment ?? 0;
+    decimal wholesalePayment = ViewBag.WholesalePayment ?? 0;
+    decimal visaPayment = ViewBag.VisaPayment ?? 0;
+    decimal ownerPayment = ViewBag.OwnerPayment ?? 0;
+
+    decimal currentBalance = (totalIncome - totalExpense) + openingBalance;
+    decimal closingBalance = currentBalance - (bankPayment + wholesalePayment + visaPayment + ownerPayment);
+}
+
+<div class="container mt-5" dir="rtl">
+    <div class="card shadow-sm">
+        <div class="card-body text-center">
+
+            @* <h3 class="mb-4 fw-bold">تقفيل اليوم - @ViewBag.BranchName</h3> *@
+            <h3 class="mb-4 fw-bold">تقفيل يوم (@ViewBag.WorkDate.ToString("yyyy-MM-dd")) - @ViewBag.BranchName </h3>
+
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+            }
+
+            <table class="table table-bordered text-center align-middle fs-5">
+                <tr class="table-info fw-bold"><th>رصيد البداية</th><td>@openingBalance.ToString("N2")</td></tr>
+                <tr class ="table-secondary"><th>إجمالي الإيرادات</th><td>@totalIncome.ToString("N2")</td></tr>
+                <tr class="table-secondary"><th>إجمالي المصروفات</th><td>@totalExpense.ToString("N2")</td></tr>
+                <tr class="table-info fw-bold"><th>الرصيد </th><td>@currentBalance.ToString("N2")</td></tr>
+                <tr><th>دفعة بنك</th><td>@bankPayment.ToString("N2")</td></tr>
+                <tr><th>دفعة جملة ماركت</th><td>@wholesalePayment.ToString("N2")</td></tr>
+                <tr><th>فيزا بنك</th><td>@visaPayment.ToString("N2")</td></tr>
+                <tr><th>جاري مالك</th><td>@ownerPayment.ToString("N2")</td></tr>
+                <tr class="table-info fw-bold"><th>الرصيد المرحل</th><td>@closingBalance.ToString("N2")</td></tr>
+            </table>
+
+            <form method="post" asp-action="CloseDay" asp-controller="DailyBalance" id="closeDayForm">
+                <button type="submit" class="btn btn-primary w-50 mt-3">تقفيل اليوم</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <a asp-controller="Transactions" asp-action="Index" class="btn btn-secondary">
+                    ← العودة للمعاملات
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.getElementById("closeDayForm").addEventListener("submit", function (e) {
+            const confirmed = confirm("هل أنت متأكد أنك تريد تقفيل اليوم؟");
+            if (!confirmed) e.preventDefault();
+        });
+    </script>
+}
+

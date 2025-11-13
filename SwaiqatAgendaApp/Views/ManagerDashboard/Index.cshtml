@@ -94,8 +94,8 @@
                 <th>كود الموظف</th>
                 <th>النوع</th>
                 @* <th>الفئة</th>  *@
-                <th>البيان</th> 
                 <th>الوصف</th>
+                <th>البيان</th> 
                 <th>المبلغ</th>
                 <th>تعديل</th>
 
@@ -111,8 +111,8 @@
                     <td>@t.User?.UserName</td>
                     <td>@t.User?.UserId</td>
                     <td>@t.Type</td>
-                    <td>@t.Category</td>
                     <td>@t.Description</td>
+                    <td>@(t.Category ?? "-")</td>
                     <td>@t.Amount</td>
                     <td>
                         <button class="btn btn-sm btn-outline-primary edit-btn" data-id="@t.TransactionId">تعديل</button>
@@ -129,25 +129,6 @@
             <div class="modal-content" id="editModalContent"></div>
         </div>
     </div>
-
-    @* <!-- Modal -->
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">تعديل المعاملة</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
-                </div>
-                <div class="modal-body" id="editModalBody">
-                    <!-- هنا هيتم تحميل الفورم -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-                    <button type="button" class="btn btn-primary" id="saveChangesBtn">حفظ التعديل</button>
-                </div>
-            </div>
-        </div>
-    </div> *@
 
 
     @section Scripts {
@@ -173,6 +154,26 @@
             });
         </script>
     }
+
+    @* <!-- Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">تعديل المعاملة</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body" id="editModalBody">
+                    <!-- هنا هيتم تحميل الفورم -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="button" class="btn btn-primary" id="saveChangesBtn">حفظ التعديل</button>
+                </div>
+            </div>
+        </div>
+    </div> *@
+
     @* @section Scripts {
         <script>
             $(document).ready(function () {

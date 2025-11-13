@@ -40,8 +40,9 @@
                 <th>تاريخ التقفيل</th>
                 <th>الإيرادات</th>
                 <th>المصروفات</th>
-                <th>الرصيد الافتتاحي</th>
-                <th>الرصيد الختامي</th>
+                <th>رصيد البداية</th>
+                <th>الرصيد </th>
+                <th>الرصيد المرحل</th>
                 <th>توقيت تقفيل اليوم</th>
                 <th>تعديل</th>
             </tr>
@@ -53,9 +54,11 @@
 
             @foreach (var b in Model)
             {
-                 @* @if (b.OpeningBalance > 0 && b.ClosingBalance > 0) // *@
+                  @if (b.OpeningBalance > 0 && b.ClosingBalance > 0)  
                  @* @if (b.ClosingBalance > 0)  *@
-                @* { // *@
+                 { 
+
+
                     // get income and expense from view bag
                     @* var dailyData = ((IEnumerable<dynamic>)ViewBag.IncomeExpenses)
                     .FirstOrDefault(x => x.BranchId == b.BranchId && x.Date == b.BalanceDate?.Date); *@
@@ -64,13 +67,30 @@
                      .FirstOrDefault(x => x.BranchId == b.BranchId && x.Date == b.BalanceDate?.Date);
                     @* .FirstOrDefault(x => x.BranchId == b.BranchId && x.Date.Date == b.BalanceDate!.Value.Date); *@
 
-                    <tr>
+                    decimal income = dailyData?.Income ?? 0;
+                    decimal expense = dailyData?.Expense ?? 0;
+                    decimal opening = b.OpeningBalance ?? 0;
+                    
+                    decimal bank = dailyData?.BankPayment ?? 0;
+                    decimal wholesale = dailyData?.WholesalePayment ?? 0;
+                    decimal visa = dailyData?.VisaPayment ?? 0;
+                    decimal owner = dailyData?.OwnerPayment ?? 0;
+                    
+                    decimal currentBalance = (income - expense) + opening;
+                    decimal carriedBalance = currentBalance - (bank + wholesale + visa + owner);
+
+                   <tr>
                         <td>@b.Branch?.BranchName</td>
                         <td>@b.BalanceDate?.ToString("yyyy-MM-dd")</td>
-                        <td class ="text-success fw-bold">@(dailyData?.Income ?? 0)</td>
+                        @* <td class ="text-success fw-bold">@(dailyData?.Income ?? 0)</td>
                         <td class="text-danger fw-bold">@(dailyData?.Expense ?? 0)</td>
                         <td>@b.OpeningBalance?.ToString("N2")</td>
-                        <td>@b.ClosingBalance?.ToString("N2")</td>
+                        <td>@b.ClosingBalance?.ToString("N2")</td> *@
+                        <td class="text-success fw-bold">@income.ToString("N2")</td>
+                        <td class="text-danger fw-bold">@expense.ToString("N2")</td>
+                        <td>@opening.ToString("N2")</td>
+                        <td>@currentBalance.ToString("N2")</td>
+                        <td>@carriedBalance.ToString("N2")</td>
                         <td>@b.CreatedAt</td>
                         <td>
                             <button class="btn btn-outline-primary btn-sm edit-btn" data-id="@b.BalanceId">
@@ -78,7 +98,7 @@
                             </button>
                         </td>
                    </tr>
-                @* } // *@
+               } 
             }
         </tbody>
     </table>

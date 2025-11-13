@@ -52,6 +52,16 @@ namespace BusinessLogicLayer.Services
                 .Where(t => t.BranchId == branchId)
                 .ToList();
 
+            //var income = transactions
+            //    .Where(t => t.Type == "إيراد")
+            //    .Sum(t => t.Amount);
+
+            //var expense = transactions
+            //    .Where(t => t.Type == "مصروف")
+            //    .Sum(t => t.Amount);
+
+            //var closing = opening + income - expense;
+
             var income = transactions
                 .Where(t => t.Type == "إيراد")
                 .Sum(t => t.Amount);
@@ -60,7 +70,26 @@ namespace BusinessLogicLayer.Services
                 .Where(t => t.Type == "مصروف")
                 .Sum(t => t.Amount);
 
-            var closing = opening + income - expense;
+            // new options  
+            var bankPayment = transactions
+                .Where(t => t.Type == "دفعة بنك")
+                .Sum(t => t.Amount);
+
+            var wholesalePayment = transactions
+                .Where(t => t.Type == "دفعة جملة ماركت")
+                .Sum(t => t.Amount);
+
+            var visaPayment = transactions
+                .Where(t => t.Type == "فيزا بنك")
+                .Sum(t => t.Amount);
+
+            var ownerPayment = transactions
+                .Where(t => t.Type == "جاري مالك")
+                .Sum(t => t.Amount);
+
+            // final closing balance
+            var closing = ((income - expense) + opening)
+                             - (bankPayment + wholesalePayment + visaPayment + ownerPayment);
 
             if (existing == null)
             {
@@ -132,6 +161,35 @@ namespace BusinessLogicLayer.Services
             existing.ClosingBalance = model.ClosingBalance;
 
             _balanceRepository.Update(existing);
+        }
+
+        public DateTime? GetLastUnclosedDay(int branchId)
+        {
+            // نجيب آخر يوم الرصيد بتاعه مش متقفل
+
+            //var unclosed = _balanceRepository
+            //    .GetAll()
+            //    .Where(b => b.BranchId == branchId && (b.ClosingBalance == null))
+            //    .OrderBy(b => b.BalanceDate)
+            //    .FirstOrDefault();
+
+            //return unclosed?.BalanceDate;
+            var allDays = _transactionsRepository.GetAll()
+                .Where(t => t.BranchId == branchId)
+                .Select(t => t.TransactionDate.Date)
+                .Distinct()
+                .OrderBy(d => d)
+                .ToList();
+
+            var closedDays = _balanceRepository.GetAll()
+                .Where(b => b.BranchId == branchId)
+                .Select(b => b.BalanceDate.Value.Date)
+                .ToList();
+
+            var unclosed = allDays
+                .FirstOrDefault(d => !closedDays.Contains(d));
+
+            return unclosed == default ? (DateTime?)null : unclosed;
         }
 
 

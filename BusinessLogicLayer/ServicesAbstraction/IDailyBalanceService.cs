@@ -17,5 +17,6 @@ namespace BusinessLogicLayer.ServicesAbstraction
         IEnumerable<DailyBalance> GetAllBalances();
         DailyBalance GetById(int id);
         void UpdateBalance(DailyBalance model);
+        DateTime? GetLastUnclosedDay(int branchId);
     }
 }

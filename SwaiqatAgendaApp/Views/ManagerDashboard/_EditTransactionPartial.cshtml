@@ -12,10 +12,27 @@
         @* <input type="hidden" asp-for="UserId" />
         <input type="hidden" asp-for="BranchId" /> *@
 
-        <div class="mb-3">
+        @* <div class="mb-3">
             <label>الوصف</label>
             <input type="text" name="Description" value="@Model.Description" class="form-control" />
+        </div> *@
+        <div class="mb-3">
+            <label>الوصف</label>
+            <select name="Description" class="form-select" required>
+                <option value="">-- اختر الوصف --</option>
+                <option value="فاتورة مياه" selected="@(Model.Description == "فاتورة مياه" ? "selected" : null)">فاتورة مياه</option>
+                <option value="فاتورة كهرباء" selected="@(Model.Description == "فاتورة كهرباء" ? "selected" : null)">فاتورة كهرباء</option>
+                <option value="فاتورة غاز" selected="@(Model.Description == "فاتورة غاز" ? "selected" : null)">فاتورة غاز</option>
+                <option value="فاتورة انترنت" selected="@(Model.Description == "فاتورة انترنت" ? "selected" : null)">فاتورة انترنت</option>
+                <option value="فاتورة تليفون" selected="@(Model.Description == "فاتورة تليفون" ? "selected" : null)">فاتورة تليفون</option>
+                <option value="مشتريات قطع غيار" selected="@(Model.Description == "مشتريات قطع غيار" ? "selected" : null)">مشتريات قطع غيار</option>
+                <option value="مشتريات اخرى" selected="@(Model.Description == "مشتريات اخرى" ? "selected" : null)">مشتريات اخرى</option>
+                <option value="نقل" selected="@(Model.Description == "نقل" ? "selected" : null)">نقل</option>
+                <option value="صيانة" selected="@(Model.Description == "صيانة" ? "selected" : null)">صيانة</option>
+                <option value="اخرى" selected="@(Model.Description == "اخرى" ? "selected" : null)">اخرى ...</option>
+            </select>
         </div>
+
 
         <div class="mb-3">
              @* <label>الفئة</label>  *@
@@ -23,13 +40,25 @@
             <input type="text" name="Category" value="@Model.Category" class="form-control" />
         </div>
 
-        <div class="mb-3">
+        @* <div class="mb-3">
             <label>النوع</label>
             <select name="Type" class="form-select">
                 <option value="إيراد" selected="@((Model.Type == "إيراد") ? "selected" : null)">إيراد</option>
                 <option value="مصروف" selected="@((Model.Type == "مصروف") ? "selected" : null)">مصروف</option>
             </select>
+        </div> *@
+        <div class="mb-3">
+            <label>النوع</label>
+            <select name="Type" class="form-select">
+                <option value="إيراد" selected="@(Model.Type == "إيراد" ? "selected" : null)">إيراد</option>
+                <option value="مصروف" selected="@(Model.Type == "مصروف" ? "selected" : null)">مصروف</option>
+                <option value="دفعة جملة ماركت" selected="@(Model.Type == "دفعة جملة ماركت" ? "selected" : null)">دفعة جملة ماركت</option>
+                <option value="دفعة بنك" selected="@(Model.Type == "دفعة بنك" ? "selected" : null)">دفعة بنك</option>
+                <option value="فيزا بنك" selected="@(Model.Type == "فيزا بنك" ? "selected" : null)">فيزا بنك</option>
+                <option value="جاري مالك" selected="@(Model.Type == "جاري مالك" ? "selected" : null)">جاري مالك</option>
+            </select>
         </div>
+
 
         <div class="mb-3">
             <label>المبلغ</label>
