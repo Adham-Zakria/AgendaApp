@@ -25,6 +25,10 @@ public partial class Transaction
 
     public DateTime? CreatedAt { get; set; }
 
+    public string LastModifiedBy { get; set; }
+
+    public DateTime? LastModifiedAt { get; set; }
+
     public virtual Branch Branch { get; set; }
 
     public virtual User User { get; set; }

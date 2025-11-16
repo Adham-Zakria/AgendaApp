@@ -1,399 +1,4 @@
-﻿@* @model IEnumerable<DataAccessLayer.Models.Transaction>
-
-@{
-    ViewData["Title"] = "المعاملات اليومية";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-
-<div class="container mt-4" dir="rtl">
-    <h3 class="mb-4 text-center">إدخال المعاملات اليومية</h3>
-
-    <div class="card mb-4">
-        <div class="card-body">
-            <form asp-action="AddTransaction" asp-controller="Transactions" method="post">
-                <div class="row">
-                    
-                    <div class="col-md-3 mb-3">
-                        <label>النوع</label>
-                        <select class="form-select" name="Type" required>
-                            <option value="">-- اختر النوع --</option>
-                            <option value="إيراد">إيراد</option>
-                            <option value="مصروف">مصروف</option>
-                            <option value="دفعة جملة ماركت">دفعة جملة ماركت</option>
-                            <option value="دفعة بنك">دفعة بنك</option>
-                            <option value="فيزا بنك">فيزا بنك</option>
-                            <option value="جاري مالك">جاري مالك</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-3 mb-3">
-                        <label>الوصف</label>
-                        <select class="form-select" name="Description" required>
-                            <option value="">-- اختر الوصف --</option>
-                            <option value="فاتورة مياه">فاتورة مياه</option>
-                            <option value="فاتورة كهرباء">فاتورة كهرباء</option>
-                            <option value="فاتورة غاز">فاتورة غاز</option>
-                            <option value="فاتورة انترنت">فاتورة انترنت</option>
-                            <option value="فاتورة تليفون">فاتورة تليفون</option>
-                            <option value="مشتريات قطع غيار">مشتريات قطع غيار </option>
-                            <option value="مشتريات اخرى">مشتريات اخرى</option>
-                            <option value="نقل">نقل</option>
-                            <option value="صيانة">صيانة</option>
-                            <option value="اخرى">اخرى ...</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-3 mb-3">
-                        <label>البيان</label>
-                        <input type="text" name="Category" class="form-control" required />
-                    </div>
-
-                    <div class="col-md-3 mb-3">
-                        <label>المبلغ</label>
-                        <input type="number" step="0.01" name="Amount" class="form-control" required />
-                    </div>
-
-                    <div class="col-md-3 d-flex align-items-end mb-3">
-                        <button type="submit" class="btn btn-secondary w-100">إضافة</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-body">
-            <h5 class="mb-3">المعاملات المسجلة اليوم</h5>
-
-            <div class="alert alert-info text-center fs-5">
-                 <strong>الرصيد الافتتاحي للفرع اليوم:</strong>
-                @ViewBag.OpeningBalance.ToString("N2") جنية
-            </div>
-
-            
-            <table class="table table-bordered table-striped text-center">
-                <thead class="table-dark">
-                    <tr>
-                        <th>التاريخ</th>
-                        <th>الفرع</th>
-                        <th>النوع</th>
-                        <th>الوصف</th>
-                        <th>البيان</th>
-                        <th>المبلغ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var t in Model)
-                    {
-                        <tr>
-                            <td>@t.TransactionDate</td>
-                            <td>@t.Branch?.BranchName</td>
-                            <td>@t.Type</td>
-                            <td>@t.Description</td>
-                            <td>@t.Category</td>
-                            <td>@t.Amount</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-
-            <div class="text-center mt-3">
-                <a asp-controller="DailyBalance" asp-action="Index" class="btn btn-secondary">
-                    تقفيل اليوم
-                </a>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-
- *@
-
-
-
-
-
-
-@* @model IEnumerable<DataAccessLayer.Models.Transaction>
-@{
-    ViewData["Title"] = "المعاملات اليومية";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-
-<div class="container mt-4" dir="rtl">
-    <h3 class="mb-4 text-center fw-bold">المعاملات اليومية</h3>
-
-    <!-- ✅ فورم الإدخال -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <form asp-action="AddTransaction" asp-controller="Transactions" method="post">
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <label class="form-label">النوع</label>
-                        <select class="form-select" name="Type" required>
-                            <option value="">-- اختر النوع --</option>
-                            <option value="إيراد">إيراد</option>
-                            <option value="مصروف">مصروف</option>
-                            <option value="دفعة جملة ماركت">دفعة جملة ماركت</option>
-                            <option value="دفعة بنك">دفعة بنك</option>
-                            <option value="فيزا بنك">فيزا بنك</option>
-                            <option value="جاري مالك">جاري مالك</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">الوصف</label>
-                        <select class="form-select" name="Description" required>
-                            <option value="">-- اختر الوصف --</option>
-                            <option value="فاتورة مياه">فاتورة مياه</option>
-                            <option value="فاتورة كهرباء">فاتورة كهرباء</option>
-                            <option value="فاتورة غاز">فاتورة غاز</option>
-                            <option value="فاتورة انترنت">فاتورة انترنت</option>
-                            <option value="فاتورة تليفون">فاتورة تليفون</option>
-                            <option value="مشتريات قطع غيار">مشتريات قطع غيار</option>
-                            <option value="مشتريات اخرى">مشتريات اخرى</option>
-                            <option value="نقل">نقل</option>
-                            <option value="صيانة">صيانة</option>
-                            <option value="اخرى">اخرى ...</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">البيان</label>
-                        <input type="text" name="Category" class="form-control"  />
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">المبلغ</label>
-                        <input type="number" step="0.01" name="Amount" class="form-control" required />
-                    </div>
-                    <div class="col-md-12 text-center mt-3">
-                        <button type="submit" class="btn btn-dark px-5">إضافة</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ✅ جدول المعاملات -->
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <div class="alert alert-info text-center fs-5">
-                <strong>الرصيد الافتتاحي للفرع اليوم:</strong>
-                @ViewBag.OpeningBalance.ToString("N2") جنية
-            </div>
-
-            <table class="table table-bordered text-center align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>الفرع</th>
-                        <th>التاريخ</th>
-                        <th>البيان</th>
-                        <th>الوصف</th>
-                        <th>إيرادات</th>
-                        <th>مصروفات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @{
-                        decimal totalIncome = 0;
-                        decimal totalExpense = 0;
-                    }
-
-                    @foreach (var t in Model)
-                    {
-                        if (t.Type == "إيراد")
-                        {
-                            totalIncome +=(decimal) t.Amount;
-                        }
-                        else
-                        {
-                            totalExpense += (decimal)t.Amount;
-                        }
-
-                        <tr>
-                            <td>@t.Branch?.BranchName</td>
-                            <td>@t.TransactionDate.ToString("dd/MM/yyyy hh:mm tt")</td>
-                            <td>@t.Category</td>
-                            <td>@t.Description</td>
-                            <td>@(t.Type == "إيراد" ? t.Amount : "-")</td>
-                            <td>@(t.Type == "مصروف" ? t.Amount : "-")</td>
-                        </tr>
-                    }
-
-                    <!-- ✅ صف الإجماليات -->
-                    <tr class="fw-bold table-secondary">
-                        <td colspan="4" class="text-center">الإجمالي</td>
-                        <td>@totalIncome.ToString("N2")</td>
-                        <td>@totalExpense.ToString("N2")</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div class="text-center mt-3">
-                <a asp-controller="DailyBalance" asp-action="Index" class="btn btn-secondary px-4">تقفيل اليوم</a>
-            </div>
-        </div>
-    </div>
-</div> *@
-
-@* @model IEnumerable<DataAccessLayer.Models.Transaction>
-
-@{
-    ViewData["Title"] = "المعاملات اليومية";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-
-    // نحسب اليوم الحالي
-    var today = DateTime.Now.ToString("dddd dd/MM/yyyy");
-    var branchName = ViewBag.BranchName ?? "مجمع مطاعم برج العرب";
-}
-
-<div class="container mt-4" dir="rtl">
-    <h3 class="text-center mb-4 fw-bold">المعاملات اليومية</h3>
-
-    <!-- ✅ عرض اسم الفرع و تاريخ اليوم -->
-    <div class="alert alert-secondary fs-5 text-center mb-4">
-        <strong>الفرع:</strong> @branchName |
-        <strong>تاريخ اليوم:</strong> @today
-    </div>
-
-    <!-- ✅ فورم الإدخال -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <form asp-action="AddTransaction" asp-controller="Transactions" method="post">
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <label class="form-label">النوع</label>
-                        <select class="form-select" name="Type" required>
-                            <option value="">-- اختر النوع --</option>
-                            <option value="إيراد">إيراد</option>
-                            <option value="مصروف">مصروف</option>
-                            <option value="دفعة جملة ماركت">دفعة جملة ماركت</option>
-                            <option value="دفعة بنك">دفعة بنك</option>
-                            <option value="فيزا بنك">فيزا بنك</option>
-                            <option value="جاري مالك">جاري مالك</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label">الوصف</label>
-                        <select class="form-select" name="Description" required>
-                            <option value="">-- اختر الوصف --</option>
-                            <option value="فاتورة مياه">فاتورة مياه</option>
-                            <option value="فاتورة كهرباء">فاتورة كهرباء</option>
-                            <option value="فاتورة غاز">فاتورة غاز</option>
-                            <option value="فاتورة انترنت">فاتورة انترنت</option>
-                            <option value="فاتورة تليفون">فاتورة تليفون</option>
-                            <option value="مشتريات قطع غيار">مشتريات قطع غيار</option>
-                            <option value="مشتريات اخرى">مشتريات اخرى</option>
-                            <option value="نقل">نقل</option>
-                            <option value="صيانة">صيانة</option>
-                            <option value="اخرى">اخرى ...</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label">البيان</label>
-                        <input type="text" name="Category" class="form-control" required />
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label">المبلغ</label>
-                        <input type="number" step="0.01" name="Amount" class="form-control" required />
-                    </div>
-
-                    <div class="col-md-12 text-center mt-3">
-                        <button type="submit" class="btn btn-dark px-5">إضافة</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ✅ جدول المعاملات -->
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <div class="alert alert-info text-center fs-5">
-                <strong>الرصيد الافتتاحي للفرع اليوم:</strong>
-                @ViewBag.OpeningBalance.ToString("N2") جنية
-            </div>
-
-            <table class="table table-bordered text-center align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>النوع</th>
-                        <th>الوصف</th>
-                        <th>البيان</th>
-                        <th>الإيرادات</th>
-                        <th>المصروفات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @{
-                        decimal totalIncome = 0;
-                        decimal totalExpense = 0;
-                        decimal closingDeductions = 0;
-                    }
-
-                    @foreach (var t in Model)
-                    {
-                        if (t.Type == "إيراد")
-                        {
-                            totalIncome += (decimal)t.Amount;
-                        }
-                        else if (t.Type == "مصروف")
-                        {
-                            totalExpense += (decimal)t.Amount;
-                        }
-                        else if (t.Type == "دفعة بنك" || t.Type == "دفعة جملة ماركت" || t.Type == "فيزا بنك" || t.Type == "جاري مالك")
-                        {
-                            closingDeductions += (decimal)t.Amount;
-                        }
-
-                        <tr>
-                            <td>@t.Type</td>
-                            <td>@t.Description</td>
-                            <td>@t.Category</td>
-                            <td>@(t.Type == "إيراد" ? t.Amount : "-")</td>
-                            <td>@(t.Type == "مصروف" ? t.Amount : "-")</td>
-                        </tr>
-                    }
-
-                    <!-- إجماليات -->
-                    @{
-                        decimal currentBalance = totalIncome - totalExpense;
-                        decimal closingBalance = currentBalance - closingDeductions;
-                    }
-
-                    <tr class="fw-bold table-secondary">
-                        <td colspan="3" class="text-center">إجمالي الإيرادات</td>
-                        <td colspan="2">@totalIncome.ToString("N2")</td>
-                    </tr>
-                    <tr class="fw-bold table-secondary">
-                        <td colspan="3" class="text-center">إجمالي المصروفات</td>
-                        <td colspan="2">@totalExpense.ToString("N2")</td>
-                    </tr>
-                    <tr class="fw-bold table-warning">
-                        <td colspan="3" class="text-center">الرصيد </td>
-                        <td colspan="2">@currentBalance.ToString("N2")</td>
-                    </tr>
-                    <tr class="fw-bold table-danger">
-                        <td colspan="3" class="text-center">الخصومات (دفعة بنك + جملة + فيزا + جاري مالك)</td>
-                        <td colspan="2">@closingDeductions.ToString("N2")</td>
-                    </tr>
-                    <tr class="fw-bold table-success">
-                        <td colspan="3" class="text-center">الرصيد المرحل (Closing Balance)</td>
-                        <td colspan="2">@closingBalance.ToString("N2")</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div class="text-center mt-3">
-                <a asp-controller="DailyBalance" asp-action="Index" class="btn btn-secondary px-4">تقفيل اليوم</a>
-            </div>
-        </div>
-    </div>
-</div> *@
-
-@model IEnumerable<DataAccessLayer.Models.Transaction>
+﻿@model IEnumerable<DataAccessLayer.Models.Transaction>
 
 @{
     ViewData["Title"] = "المعاملات اليومية";
@@ -449,7 +54,7 @@
                     </div>
 
                     <div class="col-md-3">
-                        <label class="form-label">البيان</label>
+                        <label class="form-label">البيان (اختياري)</label>
                         <input type="text" name="Category" class="form-control" />
                     </div>
 
@@ -466,6 +71,59 @@
         </div>
     </div>
 
+    <!-- فورم المعلومات الإضافية -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h4 class="text-center mb-3 fw-bold">المعلومات الإضافية</h4>
+
+            <form asp-action="AddAdditionalInfo" asp-controller="AdditionalInfo" method="post">
+
+                <input type="hidden" name="BranchId" value="@ViewBag.BranchId" />
+                @* <input type="hidden" name="TransactionDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" /> *@
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <label class="form-label">الوظيفة</label>
+                        <select class="form-select" id="Position" name="Position" required>
+                            <option value="">-- اختر الوظيفة --</option>
+                            <option value="كاشير">كاشير</option>
+                            <option value="المدير المسئول">المدير المسئول</option>
+                            <option value="مسئول الشيفت الصباحي">مسئول الشيفت الصباحي</option>
+                            <option value="مسئول الشيفت المسائي">مسئول الشيفت المسائي</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">الاسم</label>
+                        <input type="text" name="FullName" class="form-control" required />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">الكود</label>
+                        <input type="number" name="Code" class="form-control" required />
+                    </div>
+
+                    <!-- يظهر فقط عند اختيار كاشير -->
+                    <div class="col-md-4" id="ValueBox" style="display:none;">
+                        <label class="form-label">القيمة</label>
+                        <input type="number" name="Value" class="form-control" step="0.01" />
+                    </div>
+
+                    <div class="col-md-5">
+                        <label class="form-label">ملاحظات (اختياري)</label>
+                        <textarea name="Notes" class="form-control"></textarea>
+                    </div>
+
+                    <div class="col-md-12 text-center mt-2">
+                        <button type="submit" class="btn btn-primary px-5">إضافة المعلومات</button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- جدول المعاملات -->
     <div class="card shadow-sm">
         <div class="card-body">
@@ -474,122 +132,183 @@
                 @ViewBag.OpeningBalance.ToString("N2") جنية
             </div>
 
-            <table class="table table-bordered text-center align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>الإيرادات</th>
-                        <th>المصروفات</th>
-                        <th>النوع</th>
-                        <th>الوصف</th>
-                        <th>البيان</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @{
-                        decimal totalIncome = 0;
-                        decimal totalExpense = 0;
-
-                        decimal bankPayment = 0;
-                        decimal wholesalePayment = 0;
-                        decimal visaPayment = 0;
-                        decimal ownerPayment = 0;
-                    }
-
-                    @foreach (var t in Model)
-                    {
-                        switch (t.Type)
-                        {
-                            case "إيراد":
-                                totalIncome += (decimal)t.Amount;
-                                break;
-                            case "مصروف":
-                                totalExpense += (decimal)t.Amount;
-                                break;
-                            case "دفعة بنك":
-                                bankPayment += (decimal)t.Amount;
-                                break;
-                            case "دفعة جملة ماركت":
-                                wholesalePayment += (decimal)t.Amount;
-                                break;
-                            case "فيزا بنك":
-                                visaPayment += (decimal)t.Amount;
-                                break;
-                            case "جاري مالك":
-                                ownerPayment += (decimal)t.Amount;
-                                break;
+                <table class="table table-bordered text-center align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>الإيرادات</th>
+                            <th>المصروفات</th>
+                            <th>النوع</th>
+                            <th>الوصف</th>
+                            <th>البيان</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            decimal totalIncome = 0;
+                            decimal totalExpense = 0;
+                
+                            decimal bankPayment = 0;
+                            decimal wholesalePayment = 0;
+                            decimal visaPayment = 0;
+                            decimal ownerPayment = 0;
                         }
-
-                        if (t.Type == "إيراد" || t.Type == "مصروف")
+                
+                        @foreach (var t in Model)
                         {
-                           <tr>
-                               <td>@(t.Type == "إيراد" ? t.Amount : "-")</td>
-                               <td>@(t.Type == "مصروف" ? t.Amount : "-")</td>
-                               <td>@t.Type</td>
-                               <td>@t.Description</td>
-                               <td>@(t.Category ?? "-") </td>
-                           </tr>
+                            switch (t.Type)
+                            {
+                                case "إيراد":
+                                    totalIncome += (decimal)t.Amount;
+                                    break;
+                                case "مصروف":
+                                    totalExpense += (decimal)t.Amount;
+                                    break;
+                                case "دفعة بنك":
+                                    bankPayment += (decimal)t.Amount;
+                                    break;
+                                case "دفعة جملة ماركت":
+                                    wholesalePayment += (decimal)t.Amount;
+                                    break;
+                                case "فيزا بنك":
+                                    visaPayment += (decimal)t.Amount;
+                                    break;
+                                case "جاري مالك":
+                                    ownerPayment += (decimal)t.Amount;
+                                    break;
+                            }
+                
+                            if (t.Type == "إيراد" || t.Type == "مصروف")
+                            {
+                               <tr>
+                                   <td>@(t.Type == "إيراد" ? t.Amount : "-")</td>
+                                   <td>@(t.Type == "مصروف" ? t.Amount : "-")</td>
+                                   <td>@t.Type</td>
+                                   <td>@t.Description</td>
+                                   <td>@(t.Category ?? "-") </td>
+                               </tr>
+                            }
                         }
-                    }
+                
+                       
+                        @{
+                            // إجمالي الرصيد 
+                            decimal openingBalance = ViewBag.OpeningBalance ?? 0;
+                            decimal currentBalance = (totalIncome - totalExpense) + openingBalance;
+                            decimal closingBalance = currentBalance - (bankPayment + wholesalePayment + visaPayment + ownerPayment);
+                        }
+                
+                
+                        <!-- الإجماليات -->
+                        <tr class="fw-bold table-secondary">
+                            <td colspan="3" class="text-center">إجمالي الإيرادات</td>
+                            <td colspan="2">@totalIncome.ToString("N2")</td>
+                        </tr>
+                        <tr class="fw-bold table-secondary">
+                            <td colspan="3" class="text-center">إجمالي المصروفات</td>
+                            <td colspan="2">@totalExpense.ToString("N2")</td>
+                        </tr>
+                        <tr class="fw-bold table-info">
+                            <td colspan="3" class="text-center">الرصيد</td>
+                            <td colspan="2">@currentBalance.ToString("N2")</td>
+                        </tr>
+                
+                        <!-- الخصومات مفصلة -->
+                        <tr class="fw-bold table-light">
+                            <td colspan="3" class="text-center">دفعة بنك</td>
+                            <td colspan="2">@bankPayment.ToString("N2")</td>
+                        </tr>
+                        <tr class="fw-bold table-light">
+                            <td colspan="3" class="text-center">دفعة جملة ماركت</td>
+                            <td colspan="2">@wholesalePayment.ToString("N2")</td>
+                        </tr>
+                        <tr class="fw-bold table-light">
+                            <td colspan="3" class="text-center">فيزا بنك</td>
+                            <td colspan="2">@visaPayment.ToString("N2")</td>
+                        </tr>
+                        <tr class="fw-bold table-light">
+                            <td colspan="3" class="text-center">جاري مالك</td>
+                            <td colspan="2">@ownerPayment.ToString("N2")</td>
+                        </tr>
+                
+                        <tr class="fw-bold table-info">
+                            <td colspan="3" class="text-center">الرصيد المرحل</td>
+                            <td colspan="2">@closingBalance.ToString("N2")</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                    @* @{
-                        decimal currentBalance = totalIncome - totalExpense;
-                        decimal closingBalance = currentBalance - (bankPayment + wholesalePayment + visaPayment + ownerPayment);
-                    } *@
-                    @{
-                        // إجمالي الرصيد 
-                        decimal openingBalance = ViewBag.OpeningBalance ?? 0;
-                        decimal currentBalance = (totalIncome - totalExpense) + openingBalance;
-                        decimal closingBalance = currentBalance - (bankPayment + wholesalePayment + visaPayment + ownerPayment);
-                    }
-
-
-                    <!-- الإجماليات -->
-                    <tr class="fw-bold table-secondary">
-                        <td colspan="3" class="text-center">إجمالي الإيرادات</td>
-                        <td colspan="2">@totalIncome.ToString("N2")</td>
-                    </tr>
-                    <tr class="fw-bold table-secondary">
-                        <td colspan="3" class="text-center">إجمالي المصروفات</td>
-                        <td colspan="2">@totalExpense.ToString("N2")</td>
-                    </tr>
-                    <tr class="fw-bold table-info">
-                        <td colspan="3" class="text-center">الرصيد</td>
-                        <td colspan="2">@currentBalance.ToString("N2")</td>
-                    </tr>
-
-                    <!-- الخصومات مفصلة -->
-                    <tr class="fw-bold table-light">
-                        <td colspan="3" class="text-center">دفعة بنك</td>
-                        <td colspan="2">@bankPayment.ToString("N2")</td>
-                    </tr>
-                    <tr class="fw-bold table-light">
-                        <td colspan="3" class="text-center">دفعة جملة ماركت</td>
-                        <td colspan="2">@wholesalePayment.ToString("N2")</td>
-                    </tr>
-                    <tr class="fw-bold table-light">
-                        <td colspan="3" class="text-center">فيزا بنك</td>
-                        <td colspan="2">@visaPayment.ToString("N2")</td>
-                    </tr>
-                    <tr class="fw-bold table-light">
-                        <td colspan="3" class="text-center">جاري مالك</td>
-                        <td colspan="2">@ownerPayment.ToString("N2")</td>
-                    </tr>
-
-                    <tr class="fw-bold table-info">
-                        <td colspan="3" class="text-center">الرصيد المرحل</td>
-                        <td colspan="2">@closingBalance.ToString("N2")</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div class="text-center mt-3">
+            @* <div class="text-center mt-3">
                 <a asp-controller="DailyBalance" asp-action="Index" class="btn btn-primary px-4">تقفيل اليوم</a>
-            </div>
+            </div> *@
         </div>
     </div>
+
+    <!-- جدول عرض المعلومات الإضافية -->
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+
+            <h4 class="text-center mb-3 fw-bold">معلومات الكاشير و مسئولي الفرع</h4>
+
+            @{
+                var addInfo = ViewBag.AdditionalInfo as IEnumerable<DataAccessLayer.Models.AdditionalInfo>;
+            }
+
+            @* @if (ViewBag.AdditionalInfo != null && ViewBag.AdditionalInfo.Count > 0) *@
+            @if (addInfo != null && addInfo.Any())
+            {
+                <table class="table table-bordered text-center align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>الوظيفة</th>
+                            <th>الاسم</th>
+                            <th>الكود</th>
+                            <th>القيمة</th>
+                            <th>ملاحظات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var info in addInfo)
+                        {
+                            var value = info.Value ?? 0;
+                            var valueColor = value > 0 ? "green" : value < 0 ? "red" : "black";
+
+                            <tr>
+                                <td>@info.Position</td>
+                                <td>@info.FullName</td>
+                                <td>@info.Code</td>
+                                <td style="color:@valueColor; font-weight:bold;">
+                                    @value
+                                </td>
+                                <td>@(info.Notes ?? "-")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info text-center">لا توجد معلومات لهذا اليوم.</div>
+            }
+        </div>
+    </div>
+    <div class="text-center mt-3">
+        <a asp-controller="DailyBalance" asp-action="Index" class="btn btn-primary px-4">تقفيل اليوم</a>
+    </div>
+
+    @section Scripts{
+        <script>
+            // إظهار خانة القيمة لو الوظيفة = كاشير
+            document.getElementById("Position").addEventListener("change", function () {
+                var valueBox = document.getElementById("ValueBox");
+                if (this.value === "كاشير") {
+                    valueBox.style.display = "block";
+                } else {
+                    valueBox.style.display = "none";
+                }
+            });
+        </script>
+
+    }
 </div>
-
-
-
-
 

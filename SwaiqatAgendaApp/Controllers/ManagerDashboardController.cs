@@ -17,17 +17,20 @@ namespace SwaiqatAgendaApp.Controllers
         private readonly IUsersService _usersService;
         private readonly IBranchService _branchService;
         private readonly IDailyBalanceService _dailyBalanceService;
+        private readonly IAdditionalInfoService _additionalInfoService;
         
         public ManagerDashboardController(
             ITransactionsService transactionsService,
             IUsersService usersService,
             IBranchService branchService,
-            IDailyBalanceService dailyBalanceService)
+            IDailyBalanceService dailyBalanceService,
+            IAdditionalInfoService additionalInfoService)
         {
             _transactionsService = transactionsService;
             _usersService = usersService;
             _branchService = branchService;
             _dailyBalanceService = dailyBalanceService;
+            _additionalInfoService = additionalInfoService;
         }
 
         [HttpGet]
@@ -49,8 +52,37 @@ namespace SwaiqatAgendaApp.Controllers
             if (userId.HasValue && userId > 0)
                 transactions = transactions.Where(t => t.UserId == userId);
 
+            #region ADDITIONAL INFO
+            var extraInfo = _additionalInfoService.GetAllInfo();
+
+            //if (branchId.HasValue && branchId > 0 && fromDate.HasValue)
+            //{
+            //    //var date = (DateOnly)fromDate.Value.Date;
+            //    var date = DateOnly.FromDateTime(fromDate.Value);
+            //    extraInfo = _additionalInfoService.GetInfoForDay(branchId.Value, date);
+            //}
+            if (branchId.HasValue && branchId > 0)
+            {
+                extraInfo = extraInfo.Where(i => i.BranchId == branchId.Value);
+            }
+
+            if (fromDate.HasValue)
+            {
+                var from = DateOnly.FromDateTime(fromDate.Value);
+                extraInfo = extraInfo.Where(i => i.TransactionDate >= from);
+            }
+
+            if (toDate.HasValue)
+            {
+                var to = DateOnly.FromDateTime(toDate.Value);
+                extraInfo = extraInfo.Where(i => i.TransactionDate <= to);
+            }
+            #endregion
+
+
             ViewBag.Branches = _branchService.GetAllBranches();
             ViewBag.Users = _usersService.GetAllUsers();
+            ViewBag.AdditionalInfo = extraInfo.ToList();
 
             return View(transactions.ToList());
         }
@@ -150,6 +182,7 @@ namespace SwaiqatAgendaApp.Controllers
         //        }
         //    }
         //}
+
         [HttpGet]
         public IActionResult ExportToExcel(DateTime? fromDate, DateTime? toDate, int? branchId, int? userId)
         {
@@ -175,27 +208,77 @@ namespace SwaiqatAgendaApp.Controllers
                 .OrderBy(t => t.TransactionDate)
                 .ToList();
 
+            #region Additional info filters
+            var extraInfo = _additionalInfoService.GetAllInfo();
+
+            if (branchId.HasValue && branchId > 0)
+                extraInfo = extraInfo.Where(i => i.BranchId == branchId.Value);
+
+            if (fromDate.HasValue)
+            {
+                var from = DateOnly.FromDateTime(fromDate.Value);
+                extraInfo = extraInfo.Where(i => i.TransactionDate >= from);
+            }
+
+            if (toDate.HasValue)
+            {
+                var to = DateOnly.FromDateTime(toDate.Value);
+                extraInfo = extraInfo.Where(i => i.TransactionDate <= to);
+            }
+
+            var extraList = extraInfo.OrderBy(i => i.TransactionDate).ToList();
+            #endregion
+
             using (var workbook = new XLWorkbook())
             {
                 var ws = workbook.Worksheets.Add("اليومية");
 
                 // العناوين
-                ws.Cell(1, 1).Value = "الإيرادات";
-                ws.Cell(1, 2).Value = "المصروفات";
-                ws.Cell(1, 3).Value = "النوع";
-                ws.Cell(1, 4).Value = "الوصف";
-                ws.Cell(1, 5).Value = "البيان";
+                ws.Cell(1, 1).Value = "التاريخ";
+                ws.Cell(1, 2).Value = "الفرع";
+                ws.Cell(1, 3).Value = "الإيرادات";
+                ws.Cell(1, 4).Value = "المصروفات";
+                ws.Cell(1, 5).Value = "النوع";
+                ws.Cell(1, 6).Value = "الوصف";
+                ws.Cell(1, 7).Value = "البيان";
 
                 int row = 2;
                 foreach (var t in list)
                 {
-                    ws.Cell(row, 1).Value = t.Type == "إيراد" ? t.Amount : "-";
-                    ws.Cell(row, 2).Value = t.Type == "مصروف" ? t.Amount : "-";
-                    ws.Cell(row, 3).Value = t.Type;
-                    ws.Cell(row, 4).Value = t.Description;
-                    ws.Cell(row, 5).Value = t.Category ?? "-";
+                    ws.Cell(row, 1).Value = t.TransactionDate.ToString("yyyy-MM-dd HH:mm");
+                    ws.Cell(row, 2).Value = t.Branch?.BranchName;
+                    ws.Cell(row, 3).Value = t.Type == "إيراد" ? t.Amount : "-";
+                    ws.Cell(row, 4).Value = t.Type == "مصروف" ? t.Amount : "-";
+                    ws.Cell(row, 5).Value = t.Type;
+                    ws.Cell(row, 6).Value = t.Description;
+                    ws.Cell(row, 7).Value = t.Category ?? "-";
                     row++;
                 }
+
+                #region Additional info section
+                row += 2; // مسافة بين الجدولين
+
+                ws.Cell(row, 1).Value = "التاريخ";
+                ws.Cell(row, 2).Value = "المسمى الوظيفي";
+                ws.Cell(row, 3).Value = "الاسم";
+                ws.Cell(row, 4).Value = "الكود";
+                ws.Cell(row, 5).Value = "القيمة";
+                ws.Cell(row, 6).Value = "ملاحظات";
+
+                ws.Range(row, 1, row, 6).Style.Font.Bold = true;
+                row++;
+
+                foreach (var info in extraList)
+                {
+                    ws.Cell(row, 1).Value = info.TransactionDate.ToString();
+                    ws.Cell(row, 2).Value = info.Position;
+                    ws.Cell(row, 3).Value = info.FullName;
+                    ws.Cell(row, 4).Value = info.Code;
+                    ws.Cell(row, 5).Value = info.Value;
+                    ws.Cell(row, 6).Value = info.Notes;
+                    row++;
+                }
+                #endregion
 
                 // تنسيقات بسيطة
                 ws.Range("A1:E1").Style.Font.Bold = true;
@@ -212,6 +295,84 @@ namespace SwaiqatAgendaApp.Controllers
                 }
             }
         }
+
+
+        //[HttpGet]
+        //public IActionResult ExportToExcel(DateTime? fromDate, DateTime? toDate, int? branchId, int? userId)
+        //{
+        //    var transactions = _transactionsService.GetAll();
+
+        //    // apply filters
+        //    if (fromDate.HasValue)
+        //        transactions = transactions.Where(t => t.TransactionDate.Date >= fromDate.Value.Date);
+
+        //    if (toDate.HasValue)
+        //        transactions = transactions.Where(t => t.TransactionDate < toDate.Value.AddDays(1));
+
+        //    if (branchId.HasValue && branchId.Value > 0)
+        //        transactions = transactions.Where(t => t.BranchId == branchId.Value);
+
+        //    if (userId.HasValue && userId.Value > 0)
+        //        transactions = transactions.Where(t => t.UserId == userId.Value);
+
+        //    // بدون استبعاد أي نوع
+        //    var list = transactions
+        //        .OrderBy(t => t.TransactionDate)
+        //        .ToList();
+
+        //    using (var workbook = new XLWorkbook())
+        //    {
+        //        var ws = workbook.Worksheets.Add("اليومية");
+
+        //        // ====== العناوين ======
+        //        ws.Cell(1, 1).Value = "الإيرادات";
+        //        ws.Cell(1, 2).Value = "المصروفات";
+        //        ws.Cell(1, 3).Value = "دفعة بنك";
+        //        ws.Cell(1, 4).Value = "دفعة جملة ماركت";
+        //        ws.Cell(1, 5).Value = "فيزا بنك";
+        //        ws.Cell(1, 6).Value = "جاري مالك";
+        //        ws.Cell(1, 7).Value = "النوع";
+        //        ws.Cell(1, 8).Value = "الوصف";
+        //        ws.Cell(1, 9).Value = "البيان";
+        //        ws.Cell(1, 10).Value = "التاريخ";
+
+        //        ws.Range("A1:J1").Style.Font.Bold = true;
+        //        ws.Range("A1:J1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+        //        int row = 2;
+
+        //        // ====== البيانات ======
+        //        foreach (var t in list)
+        //        {
+        //            ws.Cell(row, 1).Value = t.Type == "إيراد" ? t.Amount : "";
+        //            ws.Cell(row, 2).Value = t.Type == "مصروف" ? t.Amount : "";
+        //            ws.Cell(row, 3).Value = t.Type == "دفعة بنك" ? t.Amount : "";
+        //            ws.Cell(row, 4).Value = t.Type == "دفعة جملة ماركت" ? t.Amount : "";
+        //            ws.Cell(row, 5).Value = t.Type == "فيزا بنك" ? t.Amount : "";
+        //            ws.Cell(row, 6).Value = t.Type == "جاري مالك" ? t.Amount : "";
+        //            ws.Cell(row, 7).Value = t.Type;
+        //            ws.Cell(row, 8).Value = t.Description;
+        //            ws.Cell(row, 9).Value = t.Category ?? "-";
+        //            ws.Cell(row, 10).Value = t.TransactionDate.ToString("yyyy-MM-dd HH:mm:ss");
+
+        //            row++;
+        //        }
+
+        //        // ضبط الأعمدة
+        //        ws.Columns().AdjustToContents();
+
+        //        using (var stream = new MemoryStream())
+        //        {
+        //            workbook.SaveAs(stream);
+        //            var content = stream.ToArray();
+        //            return File(content,
+        //                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        //                "اليومية.xlsx");
+        //        }
+        //    }
+        //}
+
+
 
 
 
@@ -234,9 +395,11 @@ namespace SwaiqatAgendaApp.Controllers
             if (!ModelState.IsValid)
                 return BadRequest("البيانات غير صحيحة.");
 
-            _transactionsService.UpdateTransaction(model); // adding also in service
+            var username = HttpContext.Session.GetString("UserName") ?? "Unknown";
 
-            return Json(new { success = true });
+            _transactionsService.UpdateTransaction(model, username); // adding also in service
+
+            return Json(new { success = true, modifiedBy = username });
         }
 
         [HttpGet]
@@ -362,6 +525,21 @@ namespace SwaiqatAgendaApp.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
+        [HttpPost]
+        public IActionResult ToggleReview(int id)
+        {
+            try
+            {
+                var isReviewed = _dailyBalanceService.ToggleReview(id);
+                return Json(new { success = true, isReviewed });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
+
 
     }
 }

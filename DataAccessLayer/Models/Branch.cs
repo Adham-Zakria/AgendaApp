@@ -11,6 +11,8 @@ public partial class Branch
 
     public string BranchName { get; set; }
 
+    public virtual ICollection<AdditionalInfo> AdditionalInfos { get; set; } = new List<AdditionalInfo>();
+
     public virtual ICollection<DailyBalance> DailyBalances { get; set; } = new List<DailyBalance>();
 
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();

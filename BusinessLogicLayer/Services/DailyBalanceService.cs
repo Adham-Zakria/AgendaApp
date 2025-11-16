@@ -192,6 +192,18 @@ namespace BusinessLogicLayer.Services
             return unclosed == default ? (DateTime?)null : unclosed;
         }
 
+        public bool ToggleReview(int id)
+        {
+            var balance = _balanceRepository.GetById(id);
+            if (balance == null)
+                throw new Exception("Balance not found");
+
+            balance.IsReviewed = !balance.IsReviewed;
+            _balanceRepository.Update(balance);
+
+            return balance.IsReviewed;
+        }
+
 
     }
 

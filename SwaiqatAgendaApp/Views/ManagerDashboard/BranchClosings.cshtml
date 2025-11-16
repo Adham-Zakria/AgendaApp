@@ -45,6 +45,7 @@
                 <th>الرصيد المرحل</th>
                 <th>توقيت تقفيل اليوم</th>
                 <th>تعديل</th>
+                <th>المراجعة</th>
             </tr>
         </thead>
         <tbody>
@@ -97,6 +98,12 @@
                                 تعديل
                             </button>
                         </td>
+                        <td>
+                            <button class="btn btn-sm review-btn" data-id="@b.BalanceId"
+                                    style="color:white; background-color:@(b.IsReviewed ? "green" : "red")">
+                                @(b.IsReviewed ? "تمت المراجعة" : "لم يراجع")
+                            </button>
+                        </td>
                    </tr>
                } 
             }
@@ -131,6 +138,29 @@
                     }
                 });
             });
+
+            // زر مراجعة
+                        $(document).on("click", ".review-btn", function() {
+                var btn = $(this);
+                var id = btn.data("id");
+
+                $.post("/ManagerDashboard/ToggleReview", { id: id }, function(res) {
+                    if (res.success) {
+                        if (res.isReviewed) {
+                            btn.text("تمت المراجعة");
+                            btn.css("background-color", "green");
+                        } else {
+                            btn.text("لم يراجع");
+                            btn.css("background-color", "red");
+                        }
+                    } else {
+                        alert("حدث خطأ أثناء تحديث الحالة");
+                    }
+                });
+            });
+
+
+
         </script>
     }
 

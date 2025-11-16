@@ -19,5 +19,7 @@ public partial class DailyBalance
 
     public DateTime? CreatedAt { get; set; }
 
+    public bool IsReviewed { get; set; }
+
     public virtual Branch Branch { get; set; }
 }

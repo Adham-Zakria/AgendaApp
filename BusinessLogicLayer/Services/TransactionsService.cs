@@ -54,7 +54,7 @@ namespace BusinessLogicLayer.Services
         //{
         //    _transactionsRepository.Update(transaction);
         //}
-        public void UpdateTransaction(Transaction model)
+        public void UpdateTransaction(Transaction model, string username)
         {
             var existing = _transactionsRepository.GetById(model.TransactionId);
 
@@ -64,6 +64,9 @@ namespace BusinessLogicLayer.Services
                 existing.Description = model.Description;
                 existing.Category = model.Category;
                 existing.Type = model.Type;
+
+                existing.LastModifiedBy = username;   // username who modified
+                existing.LastModifiedAt = DateTime.Now; //  modification time
 
                 // use new date
                 //if (model.TransactionDate != default(DateTime))

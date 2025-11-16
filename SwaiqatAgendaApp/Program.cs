@@ -20,11 +20,13 @@ builder.Services.AddScoped<ITransactionsRepository, TransactionsRepository>();
 builder.Services.AddScoped<IBranchesRepository, BranchesRepository>();
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IUserGroupsRepository, UserGroupsRepository>();
+builder.Services.AddScoped<IAdditionalInfoRepository, AdditionalInfoRepository>();
 
 builder.Services.AddScoped<ITransactionsService, TransactionsService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IDailyBalanceService, DailyBalanceService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
+builder.Services.AddScoped<IAdditionalInfoService, AdditionalInfoService>();
 
 
 //builder.Services.AddSession();

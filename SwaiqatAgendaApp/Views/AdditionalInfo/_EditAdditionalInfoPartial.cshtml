@@ -1,0 +1,46 @@
+﻿@model DataAccessLayer.Models.AdditionalInfo
+
+<div class="modal-header">
+    <h5 class="modal-title">تعديل البيانات الإضافية</h5>
+    @* <button type="button" class="btn-close" data-bs-dismiss="modal"></button> *@
+</div>
+
+<div class="modal-body">
+    <form id="editAdditionalInfoForm">
+
+        <input type="hidden" name="InfoId" value="@Model.InfoId" />
+
+        <div class="mb-3">
+            <label>الوظيفة</label>
+            <input type="text" name="Position" class="form-control" value="@Model.Position" required />
+        </div>
+
+        <div class="mb-3">
+            <label>الاسم</label>
+            <input type="text" name="FullName" class="form-control" value="@Model.FullName" required />
+        </div>
+
+        <div class="mb-3">
+            <label>الكود</label>
+            <input type="number" name="Code" class="form-control" value="@Model.Code" />
+        </div>
+
+        <div class="mb-3">
+            <label>القيمة</label>
+            <input type="number" name="Value" class="form-control" value="@Model.Value" />
+        </div>
+
+        <div class="mb-3">
+            <label>الملاحظات</label>
+            <textarea name="Notes" class="form-control">@Model.Notes</textarea>
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+
+    <button type="button" class="btn btn-primary" id="saveAdditionalInfoBtn">
+        حفظ التعديل
+    </button>
+</div>

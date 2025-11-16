@@ -12,14 +12,17 @@ namespace SwaiqatAgendaApp.Controllers
         private readonly ITransactionsService _transactionService;
         private readonly IBranchService _branchService;
         private readonly IDailyBalanceService _dailyBalanceService;
+        private readonly IAdditionalInfoService _additionalInfoService;
 
         public TransactionsController(ITransactionsService transactionService, 
             IBranchService branchService,
-            IDailyBalanceService dailyBalanceService)
+            IDailyBalanceService dailyBalanceService,
+            IAdditionalInfoService additionalInfoService)
         {
             _transactionService = transactionService;
             _branchService = branchService;
             _dailyBalanceService = dailyBalanceService;
+            _additionalInfoService = additionalInfoService;
         }
 
         //[HttpGet]
@@ -46,6 +49,8 @@ namespace SwaiqatAgendaApp.Controllers
             //
             var branch = _branchService.GetById((int)userBranchId!);
             ViewBag.BranchName = branch?.BranchName;
+            //
+            ViewBag.BranchId = userBranchId;
 
             //if (userBranchId == null)
             //    return RedirectToAction("Login", "Account");
@@ -73,6 +78,14 @@ namespace SwaiqatAgendaApp.Controllers
                 ViewBag.OpeningBalance = dailyBalance.OpeningBalance;
             }
 
+            #region load additional info
+            var todayDateOnly = DateOnly.FromDateTime(DateTime.Today);
+
+            var extraInfo = _additionalInfoService
+                .GetInfoForDay(userBranchId.Value, todayDateOnly);
+
+            ViewBag.AdditionalInfo = extraInfo;
+            #endregion
 
             return View(transactions);
         }

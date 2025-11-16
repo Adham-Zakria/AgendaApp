@@ -14,7 +14,7 @@ namespace BusinessLogicLayer.ServicesAbstraction
         IEnumerable<Transaction> GetAll();
         void AddTransaction(Transaction transaction);
         //void UpdateTransaction(Transaction transaction);
-        void UpdateTransaction(Transaction model);
+        void UpdateTransaction(Transaction model, string username);
         void DeleteTransaction(int id);
     }
 }

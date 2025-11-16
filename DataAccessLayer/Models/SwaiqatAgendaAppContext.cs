@@ -13,6 +13,8 @@ public partial class SwaiqatAgendaAppContext : DbContext
     {
     }
 
+    public virtual DbSet<AdditionalInfo> AdditionalInfos { get; set; }
+
     public virtual DbSet<Branch> Branches { get; set; }
 
     public virtual DbSet<DailyBalance> DailyBalances { get; set; }
@@ -25,6 +27,30 @@ public partial class SwaiqatAgendaAppContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<AdditionalInfo>(entity =>
+        {
+            entity.HasKey(e => e.InfoId).HasName("PK__Addition__4DEC9D7A391B4A2C");
+
+            entity.ToTable("AdditionalInfo");
+
+            entity.Property(e => e.FullName)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Notes)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.Position)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Branch).WithMany(p => p.AdditionalInfos)
+                .HasForeignKey(d => d.BranchId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Additiona__Branc__4D94879B");
+        });
+
         modelBuilder.Entity<Branch>(entity =>
         {
             entity.HasKey(e => e.BranchId).HasName("PK__Branches__A1682FC5479F815E");
@@ -62,6 +88,8 @@ public partial class SwaiqatAgendaAppContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.Description).HasMaxLength(255);
+            entity.Property(e => e.LastModifiedAt).HasColumnType("datetime");
+            entity.Property(e => e.LastModifiedBy).HasMaxLength(100);
             entity.Property(e => e.Type).HasMaxLength(50);
 
             entity.HasOne(d => d.Branch).WithMany(p => p.Transactions)
