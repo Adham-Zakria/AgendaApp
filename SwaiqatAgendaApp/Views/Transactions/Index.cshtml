@@ -74,7 +74,7 @@
     <!-- فورم المعلومات الإضافية -->
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <h4 class="text-center mb-3 fw-bold">المعلومات الإضافية</h4>
+            <h4 class="text-center mb-3 fw-bold">معلومات الكاشير و مسئولي الفرع</h4>
 
             <form asp-action="AddAdditionalInfo" asp-controller="AdditionalInfo" method="post">
 
@@ -251,10 +251,13 @@
 
             @{
                 var addInfo = ViewBag.AdditionalInfo as IEnumerable<DataAccessLayer.Models.AdditionalInfo>;
+
+                var cashiers = addInfo?.Where(a => a.Position == "كاشير").ToList();
+                var managers = addInfo?.Where(a => a.Position != "كاشير").ToList();
             }
 
             @* @if (ViewBag.AdditionalInfo != null && ViewBag.AdditionalInfo.Count > 0) *@
-            @if (addInfo != null && addInfo.Any())
+            @* @if (addInfo != null && addInfo.Any())
             {
                 <table class="table table-bordered text-center align-middle">
                     <thead class="table-dark">
@@ -289,9 +292,76 @@
             else
             {
                 <div class="alert alert-info text-center">لا توجد معلومات لهذا اليوم.</div>
+            } *@
+            @if (cashiers != null && cashiers.Any())
+            {
+                <table class="table table-bordered text-center align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>الوظيفة</th>
+                            <th>الاسم</th>
+                            <th>الكود</th>
+                            <th>القيمة</th>
+                            <th>ملاحظات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var info in cashiers)
+                        {
+                            var value = info.Value ?? 0;
+                            var valueColor = value > 0 ? "green" : value < 0 ? "red" : "black";
+
+                            <tr>
+                                <td>@info.Position</td>
+                                <td>@info.FullName</td>
+                                <td>@info.Code</td>
+                                <td style="color:@valueColor; font-weight:bold;">@value</td>
+                                <td>@(info.Notes ?? "-")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             }
+            else
+            {
+                <div class="alert alert-info text-center">لا توجد بيانات للكاشير.</div>
+            }
+
+            @if (managers != null && managers.Any())
+            {
+                <table class="table table-bordered text-center align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>الوظيفة</th>
+                            <th>الاسم</th>
+                            <th>الكود</th>
+                            <th>ملاحظات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var info in managers)
+                        {
+                            <tr>
+                                <td>@info.Position</td>
+                                <td>@info.FullName</td>
+                                <td>@info.Code</td>
+                                <td>@(info.Notes ?? "-")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info text-center">لا توجد بيانات للمديرين أو مسؤولي الشيفت.</div>
+            }
+
         </div>
     </div>
+
+
     <div class="text-center mt-3">
         <a asp-controller="DailyBalance" asp-action="Index" class="btn btn-primary px-4">تقفيل اليوم</a>
     </div>
