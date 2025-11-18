@@ -259,7 +259,7 @@ namespace SwaiqatAgendaApp.Controllers
                 row += 2; // مسافة بين الجدولين
 
                 ws.Cell(row, 1).Value = "التاريخ";
-                ws.Cell(row, 2).Value = "المسمى الوظيفي";
+                ws.Cell(row, 2).Value = "الوظيفة";
                 ws.Cell(row, 3).Value = "الاسم";
                 ws.Cell(row, 4).Value = "الكود";
                 ws.Cell(row, 5).Value = "القيمة";
@@ -539,6 +539,77 @@ namespace SwaiqatAgendaApp.Controllers
                 return Json(new { success = false });
             }
         }
+
+        public IActionResult Print(DateTime? fromDate, DateTime? toDate, int? branchId, int? userId)
+        {
+            #region transactions
+
+            var data = _transactionsService.GetTransactions(fromDate, toDate, branchId)
+                  .OrderByDescending(t => t.TransactionDate)
+                  .ThenByDescending(t => t.TransactionId)
+                  .ToList();
+
+            #endregion
+
+            #region Branch
+
+            string branchName = "—";
+            //var branch = _branchService.GetById(branchId ?? 0);
+            if (branchId.HasValue && branchId.Value > 0)
+            {
+                var branch = _branchService.GetById(branchId.Value);
+                branchName = branch?.BranchName ?? "—";
+            }
+            ViewBag.BranchName = branchName;
+
+            #endregion
+
+            #region Opening Balance 
+
+            decimal openingBalanceValue = 0;
+            //var openingBalance = _dailyBalanceService.GetByDate(branchId ?? 0, (DateTime)fromDate!);
+            if (branchId.HasValue && fromDate.HasValue)
+            {
+                var openingBalance = _dailyBalanceService.GetByDate(branchId.Value, fromDate.Value);
+                openingBalanceValue = openingBalance?.OpeningBalance ?? 0;
+            }
+            ViewBag.OpeningBalance = openingBalanceValue;
+
+            #endregion
+
+            #region Additional Info 
+
+            var fromDay = fromDate.HasValue
+                          ? DateOnly.FromDateTime(fromDate.Value)
+                          : DateOnly.FromDateTime(DateTime.Today);
+
+            var toDay = toDate.HasValue 
+                        ? DateOnly.FromDateTime(toDate.Value) 
+                        : DateOnly.FromDateTime(DateTime.Today);
+
+
+            //var additional = (branchId.HasValue && branchId.Value > 0)
+            //    ? _additionalInfoService.GetInfoForDay(branchId.Value, fromDay)
+            //    : new List<AdditionalInfo>();
+
+            var additional = (branchId.HasValue && branchId.Value > 0)
+                ? _additionalInfoService.GetAllInfo()
+                                  .Where(b => b.BranchId == branchId.Value)
+                                  .Where(d => d.TransactionDate >= fromDay && d.TransactionDate <= toDay)
+                                  .ToList()
+                : new List<AdditionalInfo>();
+
+            ViewBag.AdditionalInfo = additional ?? new List<AdditionalInfo>();
+
+            #endregion
+
+            ViewBag.FromDateText = fromDate?.ToString("dd/MM/yyyy");
+            ViewBag.ToDateText = toDate?.ToString("dd/MM/yyyy");
+
+
+            return View("PrintView", data);
+        }
+
 
 
     }

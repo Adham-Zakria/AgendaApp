@@ -24,7 +24,7 @@
                 <option value="">الكل</option>
                 @foreach (var branch in ViewBag.Branches)
                 {
-                    <option value="@branch.BranchId">@branch.BranchName</option>
+                    <option value="@branch.BranchId"> @branch.BranchName </option> 
                 }
             </select>
         </div>
@@ -37,7 +37,7 @@
                 {
                     @if(user.GroupId == 2)
                     {
-                       <option value="@user.UserId">@user.UserId - @user.UserName</option>
+                        <option value="@user.UserId"> @user.UserId - @user.UserName </option> 
                     }
                 }
             </select>
@@ -45,22 +45,28 @@
 
         <div class="col-md-12 mt-3 text-center">
             <button type="submit" class="btn btn-outline-primary">فلترة</button>
-            @{
+              @{
                 var fromDate = Context.Request.Query["fromDate"].ToString();
                 var toDate = Context.Request.Query["toDate"].ToString();
                 var branchId = Context.Request.Query["branchId"].ToString();
                 var userId = Context.Request.Query["userId"].ToString();
-            }
+            }  
 
             <a href="@Url.Action("ExportToExcel", new { fromDate = fromDate, toDate = toDate, branchId = branchId, userId = userId })"
                class="btn btn-outline-success ms-2">
                 تصدير إلى Excel
             </a>
 
+            <a href="@Url.Action("Print", new { fromDate = fromDate, toDate = toDate, branchId = branchId, userId = userId })"
+               target="_blank"
+               class="btn btn-outline-dark ms-2">
+                طباعة
+            </a>
+
 
         </div>
     </form>
- 
+
     <div class="d-flex justify-content-between align-items-center mb-4" dir="rtl">
         <h3 class="mb-0">لوحة المدير</h3>
 
