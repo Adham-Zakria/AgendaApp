@@ -517,8 +517,10 @@ namespace SwaiqatAgendaApp.Controllers
         {
             try
             {
-                _dailyBalanceService.UpdateBalance(model);
-                return Json(new { success = true });
+                var username = HttpContext.Session.GetString("UserName") ?? "Unknown";
+
+                _dailyBalanceService.UpdateBalance(model, username);
+                return Json(new { success = true, modifiedBy = username });
             }
             catch (Exception ex)
             {

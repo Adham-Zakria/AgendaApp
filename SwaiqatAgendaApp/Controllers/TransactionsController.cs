@@ -87,6 +87,13 @@ namespace SwaiqatAgendaApp.Controllers
             ViewBag.AdditionalInfo = extraInfo;
             #endregion
 
+            var isClosed = _dailyBalanceService
+                .GetByDate((int)userBranchId, DateTime.Today)?
+                .ClosingBalance != null;
+
+            ViewBag.IsClosed = isClosed;
+
+
             return View(transactions);
         }
 

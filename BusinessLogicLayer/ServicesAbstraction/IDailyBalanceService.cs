@@ -16,7 +16,7 @@ namespace BusinessLogicLayer.ServicesAbstraction
         void CreateOrUpdateBalance(int branchId, DateTime date);
         IEnumerable<DailyBalance> GetAllBalances();
         DailyBalance GetById(int id);
-        void UpdateBalance(DailyBalance model);
+        void UpdateBalance(DailyBalance model,string userName);
         DateTime? GetLastUnclosedDay(int branchId);
         bool ToggleReview(int id);
     }

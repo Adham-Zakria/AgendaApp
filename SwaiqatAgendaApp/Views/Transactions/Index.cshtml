@@ -18,6 +18,21 @@
         <strong>تاريخ اليوم:</strong> @today
     </div>
 
+    @if (ViewBag.IsClosed == true)
+    {
+        <div class="alert alert-danger text-center fs-4 fw-bold">
+            تم تقفيل معاملات اليوم — لا يمكن إضافة بيانات جديدة.
+        </div>
+
+        <!-- منع إضافة معاملة -->
+        <style>
+            form input, form select, form button, textarea {
+                pointer-events: none;
+                opacity: 0.6;
+            }
+        </style>
+    }
+
     <!-- فورم الإدخال -->
     <div class="card shadow-sm mb-4">
         <div class="card-body">

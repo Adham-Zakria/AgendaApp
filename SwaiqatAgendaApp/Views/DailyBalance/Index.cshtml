@@ -101,11 +101,52 @@
     </div>
 </div>
 
-@section Scripts {
+@* @section Scripts {
     <script>
         document.getElementById("closeDayForm").addEventListener("submit", function (e) {
             const confirmed = confirm("هل أنت متأكد أنك تريد تقفيل اليوم؟");
             if (!confirmed) e.preventDefault();
+        });
+    </script>
+} *@
+
+<!-- Modal تأكيد تقفيل اليوم -->
+<div class="modal fade" id="confirmCloseDayModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary text-white justify-content-center ">
+                <h5>تأكيد تقفيل اليوم</h5>
+            </div>
+
+            <div class="modal-body text-center fs-5">
+                هل أنت متأكد أنك تريد تقفيل معاملات اليوم؟
+            </div>
+
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">إلغاء</button>
+                <button id="confirmCloseBtn" type="button" class="btn btn-primary px-4">تأكيد</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const form = document.getElementById("closeDayForm");
+        const confirmBtn = document.getElementById("confirmCloseBtn");
+
+        // لما المستخدم يضغط على زر تقفيل - امنع الإرسال واظهر المودال
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const modal = new bootstrap.Modal(document.getElementById('confirmCloseDayModal'));
+            modal.show();
+        });
+
+        // لو ضغط "تأكيد" → ابعت الفورم
+        confirmBtn.addEventListener("click", function () {
+            form.submit();
         });
     </script>
 }

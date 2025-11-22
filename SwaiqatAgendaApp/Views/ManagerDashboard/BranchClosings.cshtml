@@ -55,9 +55,9 @@
 
             @foreach (var b in Model)
             {
-                   @if (b.OpeningBalance > 0 && b.ClosingBalance > 0)   
-                 @* @if (b.ClosingBalance > 0)  *@
-                  {  
+                   @* @if (b.OpeningBalance > 0 && b.ClosingBalance > 0)    *@
+                   @if (b.ClosingBalance != null)   
+                   {   
 
 
                     // get income and expense from view bag
@@ -97,6 +97,14 @@
                             <button class="btn btn-outline-primary btn-sm edit-btn" data-id="@b.BalanceId">
                                 تعديل
                             </button>
+                            <div class="mt-1 small text-muted" id="modify-info-@b.BalanceId">
+                                @if (b.LastModifiedBy != null)
+                                {
+                                    <span>آخر تعديل بواسطة: <b>@b.LastModifiedBy</b></span>
+                                    <br />
+                                    <span>@b.LastModifiedAt?.ToString("yyyy-MM-dd HH:mm")</span>
+                                }
+                            </div>
                         </td>
                         <td>
                             <button class="btn btn-sm review-btn" data-id="@b.BalanceId"
@@ -105,7 +113,7 @@
                             </button>
                         </td>
                    </tr>
-                }  
+                 }   
             }
         </tbody>
     </table>

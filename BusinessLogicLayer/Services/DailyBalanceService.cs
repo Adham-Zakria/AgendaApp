@@ -38,8 +38,10 @@ namespace BusinessLogicLayer.Services
         {
             // if already has closing balance, do nothing
             var existing = GetByDate(branchId, date);
-            if (existing != null && existing.ClosingBalance.HasValue)
+            if (existing != null && existing.ClosingBalance.HasValue)  // zero is a value 
                 return;
+            //if (existing != null && existing.ClosingBalance.HasValue && existing.ClosingBalance.Value != 0)
+            //    return;
 
             // calc opening balance from previous day
             var prevDay = date.AddDays(-1);
@@ -106,6 +108,9 @@ namespace BusinessLogicLayer.Services
             {
                 existing.OpeningBalance = opening;
                 existing.ClosingBalance = closing;
+
+                existing.CreatedAt = DateTime.Now; // update the created at to became the actual closing time 
+
                 _balanceRepository.Update(existing);
             }
 
@@ -125,7 +130,8 @@ namespace BusinessLogicLayer.Services
                     BranchId = branchId,
                     BalanceDate = nextDay,
                     OpeningBalance = closingBalance,
-                    ClosingBalance = 0,
+                    //ClosingBalance = 0,  // = null instead of 0
+                    ClosingBalance = null,
                     CreatedAt = DateTime.Now
                 });
             }
@@ -152,13 +158,17 @@ namespace BusinessLogicLayer.Services
                 ?? throw new NotFoundException("التقفيل غير موجود");
         }
 
-        public void UpdateBalance(DailyBalance model)
+        public void UpdateBalance(DailyBalance model, string userName)
         {
             var existing = _balanceRepository.GetAll().FirstOrDefault(b => b.BalanceId == model.BalanceId);
             if (existing == null) throw new NotFoundException("التقفيل غير موجود");
 
             existing.OpeningBalance = model.OpeningBalance;
             existing.ClosingBalance = model.ClosingBalance;
+            existing.BalanceDate = model.BalanceDate;
+
+            existing.LastModifiedBy = userName;
+            existing.LastModifiedAt = DateTime.Now;
 
             _balanceRepository.Update(existing);
         }

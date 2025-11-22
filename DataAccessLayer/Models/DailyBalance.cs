@@ -21,5 +21,9 @@ public partial class DailyBalance
 
     public bool IsReviewed { get; set; }
 
+    public string LastModifiedBy { get; set; }
+
+    public DateTime? LastModifiedAt { get; set; }
+
     public virtual Branch Branch { get; set; }
 }
